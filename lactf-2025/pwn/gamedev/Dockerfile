@@ -14,8 +14,8 @@ RUN pip3 install --upgrade pwntools --break-system-packages
 
 # Install pwndbg
 WORKDIR /
-RUN git clone https://github.com/pwndbg/pwndbg
-    && cd pwndbg
+RUN git clone https://github.com/pwndbg/pwndbg \
+    && cd pwndbg \
     && ./setup.sh
 
 RUN mkdir /ctf
