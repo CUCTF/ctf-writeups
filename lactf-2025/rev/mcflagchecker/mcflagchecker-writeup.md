@@ -105,7 +105,7 @@ def check_flag():
     Global['var3'] = Global['ReturnValue']
     Global['Reg1'] = Global['var3']
 ```
-*The [full decompilation](decompiled.py) and [decompiler code](decompiler.py) are provided with this report.*
+*The [full decompilation](decompiled.py) and [decompiler code](decompiler.py) are provided with this write-up.*
 
 This was still ugly, but at least now I could see what was happening without having to refer to the [Minecraft wiki](https://minecraft.wiki/w/Commands) every 5 seconds. I then spend a lot of time going through every function, from the shortest to the longest to understand what each did and rewrite it in more standard Python code. Let's look at an example:
 
@@ -164,6 +164,8 @@ To find the correct initial register values, we need to reverse the steps perfor
 Luckily, after reviewing some linear algebra, I discovered that the operation can be reversed mathematically if the matrix is invertible modulo 251. After a few unsuccessful attempts using NumPy, my favorite LLM-based chat application was able to assist me in writing [working code](matrix_math.py) to reverse the modular matrix multiplication.
 
 I'm sure there also exists some elegant mathematical way to reverse steps 1 and 2, but at this point it was getting late and I really wanted to see something that looked like a flag. Thus, I wrote a simple bruteforcer that tried every positive integer for each register, then performed steps 1 and 2 on it until the result matched the number obtained for that register by inverted matrix multiplication. The final array of registers could then be converted into text using ASCII decoding.
+
+*The complete solution script is available [here](solution.py).*
 
 ## Finding the flag
 
