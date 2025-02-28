@@ -3,9 +3,13 @@
 
 Inspired by the sanitization product brand of the same name, *Purell* is a website created for LA CTF 2025 that offers multiple levels of HTML sanitization with the goal of avoiding cross-site-scripting (XSS) from user input.
 
-Levels range from no sanitization at all, to primitive JavaScript detection and blocking, to banning HTML altogether. The code performing these checks runs on a Node.js backend powered by Express. User input is provided to the server via GET request, and the sanitized code is then displayed on the page sent back in the server's response.
+Each level takes the form of a web page featuring a text input box and a submission button. Upon submitting, a GET request is sent to the server, which sanitizes the input and returns a page including the result, as well as a user-unique secret string. Because the transmission method is GET, the text input is passed through the request URL. Methods of sanitization vary between each level, and range from no sanitization at all, to primitive JavaScript detection and blocking, to banning HTML altogether. The code performing these checks runs on a Node.js backend powered by Express.
 
-Although this website was built intentionally vulnerable, the techniques that can be used to exploit it are also relevant in more real-world scenarios, with XSS being a commonly exploited class of vulnerabilities on the web.
+![[purell1.png]]
+![[purell2.png]]
+The goal of the challenge is to steal the secret displayed to the admin for each level. To achieve this, an admin bot is used to simulate the visit of the website's administrator. A custom URL can be submitted to the admin bot, which will trigger a page visit.
+
+Although this website was built intentionally vulnerable, the techniques that can be used to exploit it are also relevant in more real-world scenarios, with XSS being a commonly exploited class of vulnerabilities on the web. 
 
 ## Vulnerability
 
@@ -13,6 +17,8 @@ In spite of its presented goal being to showcase its cross-site-scripting mitiga
 
 ## Level-by-level analysis and exploitation
 ### Level 0
+
+JavaScript filter: `(html) => html`
 
 This level, meant as an introduction, features no protection against XSS. All HTML passed in the URL will be injected into the page as-is. One way to take advantage of this is to simply inject a script HTML tag uses the `document.querySelector` function to retrieve the secret's container and send it to an attacker-controlled server using `fetch` as follows:
 ```
@@ -29,6 +35,8 @@ If the attacker can get the website's administrator to visit this URL, the secre
 
 ### Level 1
 
+JavaScript filter: `(html) => html.includes('script') || html.length > 150 ? 'nuh-uh' : html`
+
 Level 1 features the first real attempt at preventing JavaScript injection. If the input html contains the substring `script` or has a length greater than 150, the input is rejected completely. Note that the substring identification is implemented using JavaScript's `includes` string method.
 
 There are multiple ways to circumvent this protection. For one, the `script` tag is far from the only way to execute JavaScript in HTML, which will become relevant later. In this case however, the simplest attack is simply to repeat the same payload with both occurences of `script` being capitalized
@@ -41,9 +49,13 @@ This bypasses the `includes` check and also fits in the 150 characters limit, wh
 
 ### Level 2
 
+JavaScript filter: `(html) => html.includes('script') || html.includes('on') || html.length > 150 ? 'nuh-uh' : html`
+
 Level 2 features the same checks as level 1, with an additional `includes` check that blocks all `on` substrings. This is probably intended to prevent the use of images and similar HTML elements to execute JavaScript using event handlers like `onload`, but it can be circumvented using the exact same payload as Level 1.
 
 ### Level 3
+
+JavaScript filter: `(html) => html.toLowerCase().replaceAll('script', '').replaceAll('on', '')`
 
 Level 3 relies on JavaScript's `replaceAll` string method to replace all occurrences of `script` and `on` with the empty string (i.e. removing them from the input). It also converts the entire input to lowercase before executing the replacement, preventing our previous payload from slipping through.
 
@@ -65,6 +77,14 @@ Note that this will send the body's entire text content to the server, which avo
 
 ### Level 4
 
+JavaScript filter:
+```
+(html) =>
+	html
+		.toLowerCase().replaceAll('script', '').replaceAll('on', '')
+		.replaceAll('>', '')
+```
+
 This level features the same checks as the previous, with an additional replacement of all '>' characters with the empty string. This prevents us from closing the script tag, but we can take advantage of the "forgive" nature of modern browsers by instead wrapping the JavaScript code in an image's `onload` handler, and just never closing the image tag.
 
 ```
@@ -75,6 +95,15 @@ As it turns out, most browsers will still display the image and execute the `onl
 
 ### Level 5
 
+JavaScript filter:
+```
+(html) =>
+	html
+		.toLowerCase().replaceAll('script', '').replaceAll('on', '')
+		.replaceAll('>', '')
+		.replace(/\s/g, '')
+```
+
 Level 5 differs from level 4 with the addition of a replacement of all spacing characters (regex `\s`) with the empty string. This means our previous payload would not work anymore as the `img` tag name would merge with its attributes. However, we can use a little known HTML trick, which is that tag names and attributes can be separated by forward slashes (`/`) instead of spaces as follows:
 
 ```
@@ -84,6 +113,16 @@ Level 5 differs from level 4 with the addition of a replacement of all spacing c
 This will treated by the browser identically to our last payload, without containing any spaces.
 
 ## Level 6
+
+JavaScript filter:
+```
+(html) =>
+	html
+		.toLowerCase().replaceAll('script', '').replaceAll('on', '')
+		.replaceAll('>', '')
+		.replace(/\s/g, '')
+		.replace(/[()]/g, '')
+```
 
 Level 6 adds difficulty by also replacing opening and closing parentheses with the empty string, making it tricky to use `eval` and `split`. Luckily, JavaScript is a very interesting language with very interesting hidden features, one of which being  [tag functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates). This feature allows us to call functions without using parentheses. For example:
 
