@@ -5,8 +5,8 @@ Inspired by the sanitization product brand of the same name, *Purell* is a websi
 
 Each level takes the form of a web page featuring a text input box and a submission button. Upon submitting, a GET request is sent to the server, which sanitizes the input and returns a page including the result, as well as a user-unique secret string. Because the transmission method is GET, the text input is passed through the request URL. Methods of sanitization vary between each level, and range from no sanitization at all, to primitive JavaScript detection and blocking, to banning HTML altogether. The code performing these checks runs on a Node.js backend powered by Express.
 
-![[purell1.png]]
-![[purell2.png]]
+![Challenge website](purell1.png)
+![Challenge website after submitting HTML](purell2.png)
 The goal of the challenge is to steal the secret displayed to the admin for each level. To achieve this, an admin bot is used to simulate the visit of the website's administrator. A custom URL can be submitted to the admin bot, which will trigger a page visit.
 
 Although this website was built intentionally vulnerable, the techniques that can be used to exploit it are also relevant in more real-world scenarios, with XSS being a commonly exploited class of vulnerabilities on the web. 
