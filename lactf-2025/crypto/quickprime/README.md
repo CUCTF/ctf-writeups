@@ -12,6 +12,7 @@ of RSA that can be cracked by factoring the modulus $n$.
 
 **Artifacts:**
 * chall.py: encryption program provided by challenge authors, from https://github.com/uclaacm/lactf-archive/blob/main/2025/crypto/quickprime/
+* flag.txt: challenge flag, opened by chall.py and used to produce the cipher text
 
 ## Context
 
