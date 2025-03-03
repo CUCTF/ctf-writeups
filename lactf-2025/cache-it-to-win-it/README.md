@@ -28,7 +28,7 @@ When the user clicks the link to check if they are a winner, they are directed t
 
 Returning via the link and and checking again if you won does not decrement the counter, instead you get a cache hit in the response headers. 
 
-Looking at the flask server, we can see the snipit that is handeling all of this logic
+Looking at the flask server, we can see the snippet that is handling all of this logic
 
 ```python
 def normalize_uuid(uuid: str):
@@ -78,11 +78,11 @@ If there is a cache hit, the check() function will not run. If there is a cache 
 
 A query is then run to get the value of that counter, and if that row exists, and the counter is greater than or equal to 100, it prints the flag.
 
-So the goal of this exploit becomes clear, find a way to run the check() code 100 times where the sql database interprates the same uuid, while making the cache not see the same uuid and thus filter the requests.
+So the goal of this exploit becomes clear, find a way to run the check() code 100 times where the sql database interprets the same uuid, while making the cache not see the same uuid and thus filter the requests.
 
 ## Vulnerability
 
-When an SQL server interprates strings,  it will use a collation type, which essentially defines how it decides if two strings are equal, and how to sort them if not. There are normally rules related to how it handes capital letters, whitespace, both generally and trailing, and the full utf character set with accents and the like.
+When an SQL server interprets strings,  it will use a collation type, which essentially defines how it decides if two strings are equal, and how to sort them if not. There are normally rules related to how it handles capital letters, whitespace, both generally and trailing, and the full utf character set with accents and the like.
 
 By default, this mariaDB database uses the utf8mb4_uca1400_ai_ci collation. This collation is case insensitive (ci) and accent insensitive (ai).
 
@@ -96,7 +96,13 @@ b'cafe\x00' normalized is b'CAFE\x00'
 ```
 
 The non-printable characters are kept, and thus will be used as part of the cache by the flast application.
+## Exploitation
+**Exploit overview**: The exploit uses the fact that the collation can map several different strings to the same value for purposes of the SQL database.
 
+**Input restrictions**:
+We are sending strings over the web, so we have to url-encode them. Additionally, the make_cache_key function limits the length of the string to 64 bytes, so any changes beyond 64 bytes will not be seen by the cache.
+
+**Exploit Description**: 
 Dealing with which ascii chars make valid accents is a bit of a pain, and there is little in the way of technical specifications that I could find online about this collation, so before we launch into a full utf-8 adventure, lets just try to append some random url-encoded non-printable characters to the end of the query string to see what happens.
 
 ```
@@ -105,11 +111,11 @@ https://cache-it-to-win-it.chall.lac.tf/check?uuid=a23d3e4b-bde2-4211-bf53-df0dd
 Congrats! You have won! Only 98 more wins to go.
 ```
 
-This worked! we have avoided the cache, and the counter decremented by 1.
+This worked! By simply appending  %01 to the uuid, we have avoided the cache, and the counter decremented by 1.
 
-We can just append many different nonprintable chars, solo or in combination, so that we decrement this counter all the way down to 0, and recieve the flag!
+We can just append many different nonprintable chars, solo or in combination, so that we decrement this counter all the way down to 0, and receive the flag!
 
-To automate this exploit, we can create a little script which essentially pulls the users unique UUID from the first request, then repeatadly appends incrementing nonprintable ascii characters to the end, and sends it to the /check endpoint until it sends the flag back.
+To automate this exploit, we can create a little script which essentially pulls the users unique UUID from the first request, then repeatedly appends incrementing nonprintable ascii characters to the end, and sends it to the /check endpoint until it sends the flag back.
 
 ```python
 import requests
@@ -131,9 +137,15 @@ while "FLAG" not in response.text:
 print(response.text)
 ```
 
+## Remediation
+
+The best way to avoid this issue is to use some other form of limiting besides a cache. Something like a last_edited in the sql database that would be updated when the counter is decremented, and then checked before allowing the counter to be decremented again would be a more robust solution, and could even be used in combination with a cache to speed up response times.
+
+If a cache must be used, then extreame care has to be taken to ensure that the cache key is exactly synonymous with the database key. This can be done by using the same collation type for both, or otherwise ensuring that the cache key is always the same as the database key.
+
 ## Configuration Notes
 
-Run docker-compose up in the directory with the docker compose file to run the challenge. It will spin up docker containers for the flask server, database, and redis cache.
+Run docker-compose up in the directory with the docker compose file to run the challenge. It will spin up docker containers for the Flask server, database, and redis cache.
 
 Execute the target script against a local container by changing the server variable to point at localhost and the defined IP (by default 5000 in the docker compose.) So if you keep the defaults and that port is open, the server variable should be `http://localhost:5000/`
 
