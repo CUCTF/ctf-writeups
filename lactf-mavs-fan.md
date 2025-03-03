@@ -1,5 +1,13 @@
 # LA CTF: web/mavs-fan
 
+## Context & Vulnerability
+
+We are provided a website where users can write and post messages. We are also given an “Admin Bot” where we may input a URL to the post that we made, and the Admin Bot will visit the post. We are also given the site's files to analyze.
+
+In the challenge description, we are told that “the admin cookie is HttpOnly”. 
+
+Therefore, due to the setup where we can input a message and send a URL to the admin bot, plus the HttpOnly hint, this leads us to believe that our vulnerability might be cross-site scripting (XSS). This was confirmed by inserting the classic XSS test of alert() and getting valid feedback. Additionally, due to the HttpOnly hint, we can assume we will be dealing with cookies alongside XSS, and those two topics often do go together.
+
 ## Background Information: XSS
 
 ### What is XSS?
@@ -9,7 +17,7 @@ This happens because an attacker will find a way around the same origin policy (
 
 ### What is SOP?
 
-A site’s origin is a combination of its protocol (like http, https, etc.), hostname/domain (like google.com), and port of the URL accessing it. (src) If two websites have all of these same aspects, then they are said to have the same origin.
+A site’s origin is a combination of its protocol (like http, https, etc.), hostname/domain (like google.com), and port of the URL accessing it. If two websites have all of these same aspects, then they are said to have the same origin.
         
 Two websites can have the same origin even if they have different file paths: http://example.com/app1/index.html versus http://example.com/app2/index.html
 
@@ -23,7 +31,7 @@ So, a website won’t read resources from a website with a different origin. How
 
 ### What is the malicious thing we are injecting? And where are we injecting it?
 
-The thing that will be injected is a piece of malicious JavaScript code. You can inject it wherever the website will take in input. (src)
+The thing that will be injected is a piece of malicious JavaScript code. You can inject it wherever the website will take in input. 
 Below there is an example of a simple way to detect if a XSS attack is possible.
 
 ### What can our malicious script do?
@@ -42,21 +50,13 @@ Types of XSS:
 
 ### How to see if a website is vulnerable to XSS
 
-Try inserting basic JavaScript and seeing if you get a response. The most popular is: <script>alert('testing for XSS…')</script>
+Try inserting basic JavaScript and seeing if you get a response. This was inserted into the message field where a user would normally input a message to post. The most popular is: <script>alert('testing for XSS…')</script>
 
 ### How to prevent XSS
 - Filter input
 - Encode data when it’s being outputted
 - For HTTP responses, use the correct response headers
 - For cookies, use HttpOnly: Recall that cookies can be accessed by using JavaScript in an XSS attack. Most web browsers don’t need to access cookies via JavaScript. Therefore, to protect cookies, you can use the HttpOnly flag to tell the browser to access the cookie through HTTP only. The HttpOnly flag is included in the HTTP response header: Set-Cookie: sessionid=QmFieWxvbiA1; HttpOnly
-
-## Context & Vulnerability
-
-We are provided a website where users can write and post messages. We are also given an “Admin Bot” where we may input a URL to the post that we made, and the Admin Bot will visit the post. 
-
-In the challenge description, we are told that “the admin cookie is HttpOnly”. 
-
-Therefore, due to the setup where we can input a message and send a URL to the admin bot, plus the HttpOnly hint, this leads us to believe that our vulnerability will be cross-site scripting (XSS).
 
 ## Exploitation
 
@@ -84,7 +84,7 @@ So now that we know we can achieve XSS, we need to see what we may enter to get 
 
 This script tells us that if we go to the /admin path, we may get the flag only if this special cookie is enabled. If we don’t have this secret cookie, or if the cookies is not named ADMIN_SECRET, then we are redirected to the standard front page of the site. If we do meet these cookie requirements, then we get the flag. Thus, our goal now is to somehow meet these cookie requirements.
 
-Recall our hint: “the admin cookie is HttpOnly”. This means we may not use JavaScript to access our cookie. And since we are on client-side, we may not access the cookie. Thus, we need to get our cookie data server-side.
+Recall our hint: “the admin cookie is HttpOnly”. This means we may not use JavaScript to access our cookie. And since we are on client-side and the cookie is protected by HttpOnly, we may not access the cookie. Remember that HttpOnly prevents the cookies from being affected by client-side scripts. Thus, we need to get our cookie data server-side.
 
 Here are steps our XSS payload may follow to get our cookie:
 1. Do something to trigger an error
@@ -104,7 +104,7 @@ Now we may play the victim in the XSS scenario and visit the URL that the post g
 
 ## Remediation
 
-One easy way to patch this kind of error is to sanitize input. You should make sure that whatever message is entered doesn’t include inputs like <>, for example.
+One easy way to patch this kind of error is to sanitize input. You should make sure that whatever message is entered doesn’t include inputs like <>, for example. One function that may be useful is encodeURIComponent() (specifically for JavaScript). It will eliminate characters that aren't usually allowed in a URI (part of the URL).
 
 # Sources/Credits
 
