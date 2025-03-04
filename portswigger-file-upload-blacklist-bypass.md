@@ -1,40 +1,83 @@
-Lab: Web shell upload via extension blacklist bypass
-We will start the same as before, logging in and trying to upload our malicious php file
-We get an error “Sorry, php files are not allowed Sorry, there was an error uploading your file.”
-Note: this is not an issue where we can just change the Content Type. It is specifically analyzing the extension of our file
-Therefore we know that the php extension is blacklisted. Let’s see if we can get around this
-We can try uploading our own configuration file to be able to allow php
-First we need to see what kind of server we are running on. 
-When we tried to upload our file, we got a Server: Apache/2.4.41 (Ubuntu) tag in the response, so we know that we are on an Apache server
-I made an apache2.conf file that has the lines:
- 	LoadModule php_module /usr/lib/apache2/modules/libphp.so
-		AddType application/x-httpd-php .php
-Let’s try uploading this
-Indeed, we get back a message: The file avatars/apache2.conf has been uploaded
-Now we can try uploading our php file again
-It does not work.
-Therefore, that specific file kind that gives us php access was not the right one
-We need to modify the file we upload
-We only need to have the AddType
-We also need to call it .htaccess to match the files that are already on the server
-We can’t upload that file from our desktop (it won’t find .htaccess), so we will have to manually edit the HTTP request as such:
+# PortSwigger Lab: Web shell upload via extension blacklist bypass
 
-Let’s try uploading our php file again
-We still get an error
-We need to route through another file type
-Change rce.php into some other file type (like .shell or, as is suggested by PortSwigger, .133t which is just some arbitrary type; or .lmao)
-Put the AddType line directly into the request
-Still keep it named .htaccess
-------WebKitFormBoundary4WUiAJYmzPhpu9jd
-Content-Disposition: form-data; name="avatar"; filename=".htaccess"
-Content-Type: text/plain
+## Context & Vulnerability
 
+We are provided a website with a home page and "My Account" page where someone can login to their account. The account login information (username and password) is given in the lab prompt. Upon logging into the account, we may upload a photo to act as an "avatar" (profile photo) for our account. 
 
-AddType application/x-httpd-php .lmao
+This section of PortSwigger Academy is about file upload vulnerabilities, so we know that that is what we must work towards. However, if this were in a CTF setup, file upload vulnerabilities would be the next thing we would check for to get our flag.
 
+## Background Information: File Upload Vulnerabilities
 
-Now finally when we upload our web shell code (which we named to rce.lmao), we get success:  The file avatars/rce.lmao has been uploaded.
-Navigate to carlos to get the secret
-Go to …web-security-academy.net/files/avatars/rce.lmao
-And we have our solution
+File upload vulnerability is when a web server allows a file to be uploaded without checking its name, type, size, or other attributes. If a file isn't checked before it is uploaded, an attacker would be able to upload malicious code. In the worst case, an attacker would be able to upload a shell and gain remote code execution.
 
+Cases of file upload vulnerabilities:
+- A file's type isn't validated (this includes Content-Type restrictions, blacklisting an extension, etc. This would occur because the website is not configured to process that filetype)
+- A file's name isn't validated
+- A file's size isn't validated
+- A file's contents aren't validated (this includes exploits of embedding metadata into an image and uploading that)
+
+More about blacklisting:
+- Someone may try to protect their website from file upload vulnerabilities by not allowing certain common malicious extensions to be uploaded, such as .php.
+- Blacklisting can fail in many ways:
+  	- Fail to blacklist obscure malicious file types
+  	- Fail to account for parsing discrepancies when parsing the extensions
+  	- Fail to allow uploads to configure a certain file-type to be uploaded
+
+Let's say we find a type of file that is blacklisted and we can't upload it (we recieve a message or some other signal that that type of file is not allowed). We have two options to continue to try to upload the file:
+1. Use obfuscation to play around with the file extension (example: exploit.asp%00.jpg)
+2. Try to upload a code block to configure a certain filetype, and disguise that configuration file as a normal configuration file (such as .htaccess, which would allow you to make directory-specific configurations on Apache servers).
+
+In order to exploit a blacklisting vulnerability, we may find it useful to use PortSwigger's BurpSuite to analyze HTTP requests and responses between the website and the server. 
+
+## Exploitation
+
+After logging in (with our given credentials), we can try to upload a file. 
+
+We will try to upload a basic, malicious PHP file that, when successful, will result in remote code execution:
+
+exploit.php:
+
+`<?php echo file_get_contents('/home/carlos/secret'); ?>`
+
+The filepath `/home/carlos/secret` is given to us by the lab prompt. In a CTF setting, the filepath may be set to some other directory where the flag could be found. Or, since this will result in remote code execution when successful, it could be a home directory where you navigate from there.
+
+When we try to upload this file, we get a message: “Sorry, php files are not allowed Sorry, there was an error uploading your file.” We see that PHP files are not allowed to be uploaded. Additionally, we also see that the server is running on Apache, and we should take note of this.
+
+Various exploits could be attempted from here, such as:
+- Editing Content-Type restrictions: In the POST request to the server, change Content-Type from `text/php` to a possibily valid type like `image/jpg`.
+- Using obfuscation to edit the .php extension
+
+For this lab, neither of those methods worked. We may try a blacklisting vulnerability.
+
+Let's try to upload a code block that would allow a certain file type to be uploaded.
+
+From the PortSwigger file upload notes we are given the following code block for an Apache configuration file:
+
+`LoadModule php_module /usr/lib/apache2/modules/libphp.so
+      AddType application/x-httpd-php .php`
+
+Let's take just the `AddType` line and add it into a PHP file (that is all we need for configuration). We know that for this to be a valid configuration file it needs to be called `.htaccess` for Apache servers. However, if we name our PHP file `.htaccess` we will not be able to select it and upload it, so we name it something normal like `rce.php`.
+
+There is one more change that needs to made. Instead of trying to make it so that the server will allow .php specifically, we need to re-route through another file type. This can be a self-made type, I chose `.lmao` (why not!).
+
+`rce.php` will look as follows:
+
+`AddType application/x-httpd-php .lmao`
+
+We will upload `rce.php`, but before sending it off, we must make edits to the POST request in BurpSuite. We need to change the name of the file to `.htaccess` to match Apache configuration files. We can make this change in the `filename=` portion of the request. We should also change Content-Type to `text/plain` so the file is not detected as PHP from that field.
+
+Send off the modified POST request, and we get a successful message: "The file avatars/config.lmao has been uploaded."
+
+Now that `.lmao` files can be uploaded, we may go back and upload exploit.php, but modify the name in the POST request to `exploit.lmao`. 
+
+Now we simply navigate to where the file was uploaded to recieve our flag: .../files/avatars/exploit.lmao.
+
+## Remediation
+
+One way to prevent this kind of vulnerability is to block files named `.htaccess`. Or, in general, just rename files before letting them be uploaded. Additionally, don't let files be added to the permanent file system before being fully validated.
+
+# Sources/Credits
+
+Written by Madalina Stoicov
+
+- https://portswigger.net/web-security/learning-paths/file-upload-vulnerabilities
