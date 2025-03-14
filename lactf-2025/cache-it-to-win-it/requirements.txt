@@ -1,5 +1,0 @@
-flask
-flask-caching
-gunicorn
-redis
-mariadb
