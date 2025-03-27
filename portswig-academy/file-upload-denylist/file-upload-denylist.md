@@ -58,7 +58,7 @@ From the PortSwigger file upload notes we are given the following code block for
 `LoadModule php_module /usr/lib/apache2/modules/libphp.so
       AddType application/x-httpd-php .php`
 
-Let's take just the `AddType` line and add it into a PHP file (that is all we need for configuration). We know that for this to be a valid configuration file it needs to be called `.htaccess` for Apache servers. However, if we name our PHP file `.htaccess` we will not be able to select it and upload it, so we name it something normal like `rce.php`.
+Let's take just the `AddType` line and add it into a PHP file (that is all we need for configuration). We know that for this to be a valid configuration file it needs to be called `.htaccess` for Apache servers. I tried to name my file `.htaccess` directly, but because it started with a . I was unable to select it when choosing a file to upload. So, I named it `rce.php`.
 
 There is one more change that needs to made. Instead of trying to make it so that the server will allow .php specifically, we need to re-route through another file type. This can be a self-made type, I chose `.lmao` (why not!).
 
