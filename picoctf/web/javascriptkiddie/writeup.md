@@ -10,7 +10,7 @@ Every PNG image contains the same first 8 bytes, known as the "PNG signature": 8
 
 The next chunk of a PNG is the image header (IHDR), which contains information about the image's width, depth, and color information. The image below displays what the IHDR could look like for a basic image. Note that the first 8 bytes of the IHDR are the size of the IHDR chunk and the fact that the chunk is an IHDR. Therefore, these bytes will be consistent throughout all PNGs: 00 00 00 0D 49 48 44 52.
 
-!(jsk-images/basic-png-format-ex.png)
+![Image: basic PNG format](jsk-images/basic-png-format-ex.png)
 
 ## Vulnerability
 
@@ -20,11 +20,11 @@ We see that upon sending text in the website's input area, two requests are sent
 
 Upon hitting "Send" in the BurpSuite Repeater for the first request, we see that the HTML contains a JavaScript script. See `javascriptkiddie.js` for the script. It gathers information from /bytes (see next paragraph), calls a function assemble_png, and then pieces together an image.
 
-!(jsk-images/repeater-js.png)
+![Image: BurpSuite Repeater with JS](jsk-images/repeater-js.png)
 
 Upon hitting "Send" in the BurpSuite Repeater for the second request, we see that we are directed to /bytes and we get a series of bytes in our response. See the top of `jsk_solver.c` (char* bytes_as_string) for a possible version of the bytes (every instance of the challenge will have a slightly different set of bytes).
 
-!(jsk-images/repeater-bytes.png)
+![Image: BurpSuite Repeater with bytes](jsk-images/repeater-bytes.png)
 
 Putting these pieces of information together we gather that the assemble_png function does the following:
 1. Set a default key of 0000000000000000 (16 0s)
