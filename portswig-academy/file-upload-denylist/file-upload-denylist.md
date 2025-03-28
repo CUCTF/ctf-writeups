@@ -1,6 +1,6 @@
 # PortSwigger Lab: Web shell upload via extension denylist bypass
 
-## Context & Vulnerability
+## Context
 
 We are provided a website with a home page and "My Account" page where someone can login to their account. The account login information (username and password) is given in the lab prompt. Upon logging into the account, we may upload a photo to act as an "avatar" (profile photo) for our account. 
 
@@ -18,7 +18,7 @@ Cases of file upload vulnerabilities:
 - A file's size isn't validated
 - A file's contents aren't validated (this includes exploits of embedding metadata into an image and uploading that)
 
-More about dentlisting:
+More about denylisting:
 - Someone may try to protect their website from file upload vulnerabilities by not allowing certain common malicious extensions to be uploaded, such as .php.
 - Denylisting can fail in many ways:
   	- Fail to denylist obscure malicious file types
@@ -31,7 +31,7 @@ Let's say we find a type of file that is denylisted and we can't upload it (we r
 
 In order to exploit a denylisting vulnerability, we may find it useful to use PortSwigger's BurpSuite to analyze HTTP requests and responses between the website and the server. 
 
-## Exploitation
+## Vulnerability
 
 After logging in (with our given credentials), we can try to upload a file. 
 
@@ -49,7 +49,11 @@ Various exploits could be attempted from here, such as:
 - Editing Content-Type restrictions: In the POST request to the server, change Content-Type from `text/php` to a possibily valid type like `image/jpg`.
 - Using obfuscation to edit the .php extension
 
-For this lab, neither of those methods worked. We may try a denylisting exploit.
+For this lab, neither of those methods worked. We may try a denylisting exploit. Indeed, we are able to upload a configuration file to alter what file types are allowed to be uploaded.
+
+The vulnerability here is that a .htaccess file (or a file that is renamed to .htaccess once entered into BurpSuite) can be uploaded to add a new file type to be uploaded.
+
+## Exploitation
 
 Let's try to upload a code block that would allow a certain file type to be uploaded.
 
