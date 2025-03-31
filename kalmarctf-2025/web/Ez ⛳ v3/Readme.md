@@ -8,7 +8,7 @@ To get the flag, you need: the mTLS cert, connecting from localhost, ... and bre
 
 Challenge note: the handout files contains tls internal while the hosted challenge mostly use real TLS.
 ```
-This challenge is a multistep attack, comprising of exploiting misformed tls cert checking, then exmploiting a template injection vulnerability in one of the internal endpoints to get the flag.
+This challenge is a multistep attack, comprising of exploiting malformed tls cert checking, then exploiting a template injection vulnerability in one of the internal endpoints to get the flag.
 
 
 **Artifacts:**
@@ -86,11 +86,11 @@ private.caddy.chal-kalmarc.tf {
         respond "UNKNOWN ACTION"
 }
 ```
-We will look harder at the tls declrations later, but for now we can see that there are two different host paths on this server: 
+We will look harder at the tls declarations later, but for now we can see that there are two different host paths on this server: 
 
 * `public.caddy.chal-kalmarc.tf`: This is the public landing page, which will respond to any requests with "PUBLIC LANDING PAGE. NO FUN HERE."
 * `private.caddy.chal-kalmarc.tf`: This is the private landing page, with a number of interesting endpoints.
-    * `/flag`: This endpoint is protected by a number of checks, including checking if the address will come from localhost, and a 1==1 check designed to be impossible to pass.
+    * `/flag`: This endpoint is protected by a number of checks, including checking if the address will come from localhost, and a 1\==1 check designed to be impossible to pass.
     * `/cat`: This endpoint just responds with "HELLO WORLD", but is otherwise uninteresting.
     * `/fetch/*`: This endpoint will httpInclude an internal endpoint in the server. This is a trivial way to get around the ip check in the flag endpoint, but is also interesting for reasons that will be explained later.
     * `/headers`: This endpoint takes all of the headers, and pipes them to mustToPrettyJson, which is a template function that will format the headers into a pretty json format
@@ -98,19 +98,19 @@ We will look harder at the tls declrations later, but for now we can see that th
     * `/whoami`: This endpoint returns the user ID of the request.
 
 ### TLS
-TLS is a protocal that is used to authenticate sides of a connection, then encrypt traffic between them. When you send a HTTPS request to a server for the first time, a TLS handshake is performed, which includes the following steps, somewhat simplified:
-1. The client sends a "ClientHello" message to the server, which includes the TLS version and avaliable cipher suites.
+TLS is a protocol that is used to authenticate sides of a connection, then encrypt traffic between them. When you send a HTTPS request to a server for the first time, a TLS handshake is performed, which includes the following steps, somewhat simplified:
+1. The client sends a "ClientHello" message to the server, which includes the TLS version and available cipher suites.
 2. The server responds with a "ServerHello" message, which includes the TLS version and cipher suites.
 3. The server sends its certificate to the client, which includes the public key and the server's identity.
 4. The client verifies the server's certificate, and if it is valid, it generates a random number and encrypts it with the server's public key.
 
-From then on, the client and server can use the random number as a symetic cryptographic key to encrypt traffic between them.
+From then on, the client and server can use the random number as a symmetric cryptographic key to encrypt traffic between them.
 
-It is only at this point that your https request is sent to the server, encrypted with the symetric key. The server decrypts the request, and sends a response back to the client, which is also encrypted with the symmetric key.
+It is only at this point that your https request is sent to the server, encrypted with the symmetric key. The server decrypts the request, and sends a response back to the client, which is also encrypted with the symmetric key.
 
 This process allows the user to confirm that the server is who it says it is, and that the traffic between them is encrypted.
 
-This caddy server uses a slightly modified process for the private host called mTLS. This process is identical, but with the addational step of the user providing a certificate to the server, which is then verified by the server. If that certificate does not check out, the server will not respond to the request. 
+This caddy server uses a slightly modified process for the private host called mTLS. This process is identical, but with the additional step of the user providing a certificate to the server, which is then verified by the server. If that certificate does not check out, the server will not respond to the request. 
 
 This is done by the following lines in the caddyfile:
 ```
@@ -127,9 +127,9 @@ This is done by the following lines in the caddyfile:
 
 This checks that the client has a local certificate, which is a self signed certificate that is generated by the server. 
 
-## Vurnerabilities
+## Vulnerabilities
 
-This server has 2 primary vurnabilities that can be used in sequence to extract the flag.
+This server has 2 primary Vulnerabilities that can be used in sequence to extract the flag.
 
 ### 1. TLS certificate checking
 The first is related to the TLS certificate checking. At the top of the Caddyfile, we can see the following line:
@@ -144,7 +144,7 @@ HTTPS requests use a different field called the Host header for the same purpose
 
 To attack this vulnerability, we use the following steps:
 
-1. Send the CLientHello message to the server, with the SNI feild set to `public.caddy.chal-kalmarc.tf`
+1. Send the ClientHello message to the server, with the SNI field set to `public.caddy.chal-kalmarc.tf`
 2. The server responds with a ServerHello message, and the two complete the TLS handshake, which does not require the client to send a certificate.
 3. From this point on, all requests to the server from this client (IP + port num), will be decrypted with the key generated in this handshake, regaurdles off which virtual host they are actually addressed to.
 4. The client sends an HTTPS request to the server, with the Host header set to `private.caddy.chal-kalmarc.tf`. This request is decrypted by the server, and the server responds with the response from the private host.
@@ -168,9 +168,9 @@ route /flag {
     respond {$FLAG}
 }
 ```
-This performs two checks before returning the flag. The first check is to ensure that the request is coming from localhost. This is is not overly difficult to bypass, just requiring the very convient server side request forgery provided by the /fetch endpoint.
+This performs two checks before returning the flag. The first check is to ensure that the request is coming from localhost. This is is not overly difficult to bypass, just requiring the very convent server side request forgery provided by the /fetch endpoint.
 
-The second check is a 1==1 check, which is impossible to bypass. Thus, the /flag endpoint can never return the flag, and is only a red herring to get us to play around with the /fetch endpoint and remind us that the flag is stored in an environment variable.
+The second check is a 1\==1 check, which is impossible to bypass. Thus, the /flag endpoint can never return the flag, and is only a red herring to get us to play around with the /fetch endpoint and remind us that the flag is stored in an environment variable.
 
 Now, for the actual template injection vulnerability. To test these, I set up the server locally, and started poking around.
 
@@ -233,7 +233,7 @@ This request is sent to the server, and the server responds with the following:
 }
 ```
 
-We can see that the request was processed, and the template was replaced with the IP address of the server. This is a good sign, as it means that the httpInclude function does process templates. (Upon further testing, it seems that the httpInclude function processes all of the templates in whatever it recieves from the endpoint it is including).
+We can see that the request was processed, and the template was replaced with the IP address of the server. This is a good sign, as it means that the httpInclude function does process templates. (Upon further testing, it seems that the httpInclude function processes all of the templates in whatever it receives from the endpoint it is including).
 
 Lets try to exploit this by including the /headers endpoint in the /fetch endpoint, and passing it a template that will call the env function. 
 ```
@@ -244,13 +244,13 @@ exploit: {{env "FLAG"}}
 
 
 ```
-response:
+Response:
 ```
 HTTP/1.1 500 Internal Server Error
 ```
 
 Oops, looks like the server is not happy with that. Because we are running this locally, we can dig into the logs to see what happened:
-```
+```json
 {
   "level": "error",
   "ts": 1743396160.764403,
@@ -296,7 +296,7 @@ We can see that in creating JSON, the server is automatically escaping the doubl
 
 It is at this point where the solution I came up with departed from the intended solution
 
-The intended solution goes something like this: You realize that throughout the caddyfile, \` and " are used interchangably, and then you can go and see that go uses \` for raw string literals, and " for regular strings, and that both would work to wrap the word FLAG to get the flag out.
+The intended solution goes something like this: You realize that throughout the caddyfile, \` and " are used interchangeably, and then you can go and see that go uses \` for raw string literals, and " for regular strings, and that both would work to wrap the word FLAG to get the flag out.
 
 Something like this:
 ```
@@ -314,7 +314,7 @@ I went down a different path, realizing that you could chain several template fu
 goofy_exploit: {{ .Req.Header.Flag | toString  | substr 1 5 | env}}
 flag: FLAG
 ```
-This template gets the header for the flag function, which is a string array by default, pipes it to the toString function, passes it to the substr function to get rid of the bracksets around the converted array, then finally passes it to the env function to get the flag.
+This template gets the header for the flag function, which is a string array by default, pipes it to the toString function, passes it to the substr function to get rid of the brackets around the converted array, then finally passes it to the env function to get the flag.
 
 This took more work to discover, but works just as well.
 
@@ -387,7 +387,7 @@ finally:
     ssl_sock.close()
 ```
 
-This creates a socket connection to the server, wraps the socket in an SSL context, specially configured to allow us to not match the hostname and skip certificate verification, sets the SNI hostname to the public host, and sends the request.
+This creates a socket connection to the server, wraps the socket in an SSL context, specially configured to allow us to not match the hostname and skip certificate verification, sets the SNI hostname to the public host, and sends the request. 
 
 The request is as follows:
 ```
@@ -401,7 +401,7 @@ goofy_exploit: {{ .Req.Header.Flag | toString  | substr 1 5 | env}}
 flag: FLAG
 
 ```
-This request targets the /fetch/headers endpoint on the private host, and includes the template injection exploit in the goofy_exploit header. The intended_exploit header is included to show that it works as well, but is not used in the final exploit.
+This request targets the /fetch/headers endpoint on the private host, and includes the template injection exploit in the goofy_exploit header. The intended_exploit header is included as well.
 
 By running this script, when we have the server running locally, we get the following output:
 ```
@@ -437,9 +437,9 @@ We can see that the flag is returned in the intended_exploit header, as well as 
 By switching the server_host variable to the ip of the remote host, we are able to extract the real flag!.
 
 
-**Exploit primatives used**:
+**Exploit primitives used**:
 * Template Injection: We used the template injection vulnerability to inject a template that would call the env function, which would return the flag.
-* Server Fronting: We exchanged a TLS handshake with one virtual host running behing an IP, then used that to send a request to a different virtual host running on the same IP.
+* Server Fronting: We exchanged a TLS handshake with one virtual host running behind an IP, then used that to send a request to a different virtual host running on the same IP.
 
 ## Remediation
 
