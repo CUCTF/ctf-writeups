@@ -1,3 +1,0 @@
-GET /headers HTTP/1.1          
-Host: private.caddy.chal-kalmarc.tf
-ip: {{.ClientIP}}
