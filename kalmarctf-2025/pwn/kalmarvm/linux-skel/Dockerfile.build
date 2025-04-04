@@ -1,0 +1,29 @@
+# Run command: docker build -o linux-skel-6.13.4 -t linux-skel -f Dockerfile.build .
+
+# Clone the specific guest kernel version and compile preprequisites for external module build
+# Doesn't build the full kernel, but still might take a while to download everything
+
+# Set up build environment
+FROM ubuntu:24.04 AS linux-builder
+
+RUN apt update && apt install -y git build-essential libncurses-dev gawk flex bison openssl libssl-dev dkms libelf-dev libudev-dev libpci-dev libiberty-dev autoconf bc
+
+# Only clone the specific commit we need, not the full git history
+RUN git clone --depth 1 --branch v6.13.4 git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git -o kernel
+
+WORKDIR /linux-stable
+
+# Do minimal compilation to get required prereqs for external module build
+RUN make -j$(nproc) defconfig
+RUN make -j$(nproc) modules_prepare
+
+# Get stripped installer to copy required files to /build
+COPY stripped_install.sh .
+RUN chmod +x stripped_install.sh
+RUN ./stripped_install.sh /build
+
+# Copy final artifacts
+FROM scratch
+
+COPY --from=linux-builder /build .
+
