@@ -30,6 +30,10 @@ This would set `cache_file` to `../../index.php`, deleting that file.
 
 ## Vulnerability
 
+The vulnerability seen in this CTF is the use of user-generated PHP object content being directly unserialized before being sanitized in any way. Also, the use of magic functions like `__toString()` are dangerous if misused.
+
+## Exploitation
+
 As we are given no source code for this challenge, we may try to get more information by using the `curl` command. 
 
 We may try to visit different pages on the website. After some trial and error, we are able to find the pages `authentication.php` and `cookie.php`. These were found with the following commands:
@@ -41,11 +45,6 @@ We may try to visit different pages on the website. After some trial and error, 
 The `.phps` extension is needed to see the source code of these pages. I used `curl` to get this source code since BurpSuite Repeater just gave me a "Forbidden" response. It's likely that `curl` has fewer filters, allowing us to see the source code of these pages.
 
 
-
-
-
-
-## Exploitation
 
 
 
