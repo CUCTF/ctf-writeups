@@ -172,8 +172,15 @@ to the `lkvm` `thread_pool__do_job` function, convert the `lkvm` process into a
 remote shell.
 
 The later delivery mechanism will copy our payload bytes to the `stats` element
-of the global `static struct bln_dev bdev` structure, in the `lkvm` host address
-space:
+of the global `static struct bln_dev bdev` structure in the `lkvm` host address
+space. The `stats` array is normally used to allow the guest balloon driver to
+report guest memory statistics to the host, and so effectively provides a few
+hundred guest-controlled bytes in the host kvmtool memory.
+
+Examining the `bln_dev` struct shows that the `stats` array happens to sit directly
+after the `jobs` array (which is the array whose bounds we overflow), 
+so it is an ideal location to drop a payload that the final vulnerability will
+launch:
 ```C
 struct bln_dev {
 	struct list_head	list;
