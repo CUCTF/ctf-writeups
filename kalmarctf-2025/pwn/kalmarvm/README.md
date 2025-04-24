@@ -333,6 +333,16 @@ and the remote shell will launch on the host:
 
 ![success](images/win.png)
 
+## Exploit Primitives
+
+- **Guest-controlled host write** – the legitimate *stats* virtqueue copies an arbitrary guest buffer into the host’s `bdev.stats` array, giving a reliable ~130-byte write just past `bdev.jobs`.
+
+- **Fixed-address knowledge** – `lkvm` is built without PIE, so absolute addresses such as `&bdev` and `virtio_net_exec_script()` are known and can be hard-coded into the payload.
+
+- **Out-of-bounds virtqueue index** – writing an out-of-range `vq` ( `VIRTIO_BALLOON_VQ_STATS + 1` ) to the *notify* MMIO register makes `thread_pool__do_job()` fetch a job pointer that lands inside the attacker-controlled `stats` buffer.
+
+- **Malicious `thread_pool__job` structure** – by populating that buffer with a fake job whose `callback` points to `virtio_net_exec_script()` and whose first argument points to the string `"/bin/sh"`, the payload turns the host’s worker thread into an implicit `execve("/bin/sh", …)` gadget.
+
 
 ## Remediation
 Remediation for this exact bug would be straightforward: add a bounds check to the
