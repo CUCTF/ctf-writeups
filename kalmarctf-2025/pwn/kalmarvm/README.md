@@ -69,7 +69,9 @@ Stripped:   No
 The `kvmtool` code has an out-of-bounds read vulnerability in the virtqueue
 notification handling of the PCI-based `virtio` balloon device emulator,
 at line 235 of `virtio/balloon.c`, which can be combined with an in-bounds write
-to get code execution.
+to get code execution. This vulnerability is quite similar to
+[CVE-2021-45464](https://nvd.nist.gov/vuln/detail/CVE-2021-45464), discovered
+in KalmarCTF 2023.
 
 The core vulnerability is in the [`notify_vq` function](https://github.com/kvmtool/kvmtool/blob/e48563f5c4a48fe6a6bc2a98a9a7c84a10f043be/virtio/balloon.c#L231), which is called by `virtio_pci__notify_write` when the
 guest triggers a previously-registered `mmio` callback by writing to a dedicated
