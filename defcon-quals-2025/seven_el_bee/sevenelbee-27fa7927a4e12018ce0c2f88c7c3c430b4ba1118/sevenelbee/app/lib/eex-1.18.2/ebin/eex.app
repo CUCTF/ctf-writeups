@@ -1,0 +1,9 @@
+{application,eex,
+             [{modules,['Elixir.EEx','Elixir.EEx.Compiler',
+                        'Elixir.EEx.Engine','Elixir.EEx.SmartEngine',
+                        'Elixir.EEx.SyntaxError']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir]},
+              {description,"eex"},
+              {registered,[]},
+              {vsn,"1.18.2"}]}.

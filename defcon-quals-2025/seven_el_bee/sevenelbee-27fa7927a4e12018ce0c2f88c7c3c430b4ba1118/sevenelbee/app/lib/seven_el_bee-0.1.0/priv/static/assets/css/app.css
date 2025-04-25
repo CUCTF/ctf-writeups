@@ -1,0 +1,712 @@
+/* css/main.sass */
+body {
+  background: #1E3D2F;
+  color: #c6b453;
+}
+header#toplevel_header {
+  border-bottom: 1px solid #e8f0f4;
+  display: grid;
+  grid-template-columns: 2;
+}
+header#toplevel_header h1 {
+  grid-column: 1;
+  margin: 0;
+}
+header#toplevel_header div {
+  grid-column: 2;
+  align-self: center;
+  justify-self: end;
+}
+header#toplevel_header div.admin {
+  background-color: #fff0f0;
+  color: #f40404;
+}
+html,
+body {
+  font-family:
+    "Source Sans",
+    "Source Sans Pro",
+    Verdana,
+    Arial,
+    sans;
+}
+pre,
+code,
+tt {
+  font-family:
+    "Source Code Pro",
+    "Fantasque Sans Mono",
+    Consolas,
+    courier;
+}
+tt.count_von_count {
+  font-size: 1.25em;
+}
+@font-face {
+  font-family: "Source Sans";
+  src:
+    local("Source Sans Bold Italic"),
+    local("SourceSans3-BoldIt"),
+    url("../SourceSans3-BoldIt-YLY6SR2Q.woff2") format("woff2");
+  font-weight: bold;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Source Sans";
+  src:
+    local("Source Sans Bold"),
+    local("SourceSans3-Bold"),
+    url("../SourceSans3-Bold-2LSLUITH.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Source Sans";
+  src:
+    local("Source Sans Italic"),
+    local("SourceSans3-It"),
+    url("../SourceSans3-It-2JHKFOZG.woff2") format("woff2");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Source Sans";
+  src:
+    local("Source Sans"),
+    local("SourceSans3-Regular"),
+    url("../SourceSans3-Regular-OCZTRI4S.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src:
+    local("Source Code Pro Bold"),
+    local("SourceCodePro-Bold"),
+    url("../SourceCodePro-Bold-NL67GURG.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src:
+    local("Source Code Pro Italic"),
+    local("SourceCodePro-It"),
+    url("../SourceCodePro-It-ODNIMDT3.woff2") format("woff2");
+  font-weight: normal;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src:
+    local("Source Code Pro Bold Italic"),
+    local("SourceCodePro-BoldIt"),
+    url("../SourceCodePro-BoldIt-M2U7C52X.woff2") format("woff2");
+  font-weight: bold;
+  font-style: italic;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src:
+    local("Source Code Pro"),
+    local("SourceCodePro-Regular"),
+    url("../SourceCodePro-Regular-PQNDROQB.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
+#flash-group .flash {
+  border: 1px solid #c6b453;
+  border-radius: 0.5rem;
+  background-color: #51D1C8;
+  padding: 0.5rem;
+}
+#flash-group .flash.error {
+  border-color: #EB759C;
+  background-color: #f5b8cc;
+}
+#flash-group .flash.info {
+  border-color: #A1CC41;
+  background-color: #bfdc7d;
+}
+.login_or_signup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+table.threadlist {
+  width: 100%;
+  border-collapse: collapse;
+}
+table.threadlist th,
+table.threadlist td {
+  padding: 0.25em;
+}
+table.threadlist tbody tr {
+  background-color: #e8f0f4;
+}
+table.threadlist tbody tr:nth-child(odd) {
+  background-color: #f4f8f8;
+}
+table.thread_content {
+  table-layout: fixed;
+  border-collapse: collapse;
+  width: 100%;
+}
+table.thread_content tr.post {
+  background-color: #e8f0f4;
+}
+table.thread_content tr.post_meta {
+  background-color: #f4f8f8;
+  border-bottom: 1px solid #c6b453;
+}
+table.thread_content td.poster {
+  width: 12rem;
+  vertical-align: top;
+}
+table.thread_content td.poster.banned {
+  color: #EB759C;
+  background:
+    linear-gradient(
+      90deg,
+      #e8f0f4 90%,
+      #EB759C 100%);
+}
+table.thread_content td.poster.admin {
+  text-shadow: 0 0 0.5rem #A1CC41;
+  background:
+    linear-gradient(
+      90deg,
+      #e8f0f4 90%,
+      #A1CC41 100%);
+}
+.new_thread,
+.reply_form {
+  display: grid;
+  grid-template-columns: 12rem auto;
+}
+.new_thread > div,
+.new_thread > form,
+.reply_form > div,
+.reply_form > form {
+  margin: 0.5rem;
+}
+.new_thread ul,
+.reply_form ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.new_thread ul li,
+.reply_form ul li {
+  margin-bottom: 0.25rem;
+}
+.new_thread form dl,
+.reply_form form dl {
+  display: grid;
+  grid-template-columns: 12rem auto;
+}
+.new_thread form dl dt,
+.reply_form form dl dt {
+  text-align: right;
+}
+.new_thread form dl dd,
+.reply_form form dl dd {
+  margin-left: 1rem;
+}
+.new_thread form input,
+.reply_form form input {
+  width: 100%;
+}
+.new_thread form textarea,
+.reply_form form textarea {
+  width: 100%;
+  height: 10rem;
+}
+ul.thread_tag_picker {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+ul.thread_tag_picker li {
+  display: inline-block;
+  padding: 0.125rem;
+  margin: 0;
+}
+ul.thread_tag_picker li label {
+  display: inline-block;
+  width: 6rem;
+}
+ul.thread_tag_picker li label input {
+  width: auto;
+}
+ul.thread_tag_picker li label img {
+  vertical-align: middle;
+}
+@keyframes rainbow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 25%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+a.admin_link {
+  font-size: 8rem;
+  font-weight: bold;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #A1CC41,
+      #EB759C,
+      #51D1C8);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 5s linear infinite;
+}
+dl dt pre,
+dl dd pre {
+  display: inline-block;
+  margin: 0;
+}
+form fieldset {
+  margin-bottom: 1rem;
+}
+form fieldset label {
+  display: block;
+  margin-bottom: 1rem;
+}
+form fieldset p.note {
+  font-style: italic;
+}
+form #column_list {
+  margin: 1rem;
+  float: right;
+}
+input {
+  background: #2c5945;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+}
+button {
+  background: #2c5945;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+  border-radius: 0.25rem;
+}
+#dealt_in ul#ticket_info,
+#dealt_in ul#deal_controls {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+#dealt_in ul#ticket_info li,
+#dealt_in ul#deal_controls li {
+  display: inline-block;
+  margin-right: 1rem;
+}
+#dealt_in ul#ticket_info li:last-child,
+#dealt_in ul#deal_controls li:last-child {
+  margin-right: 0;
+}
+ol#deck,
+ol#next_picker {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  margin: 1rem;
+  padding-right: 4rem;
+}
+ol#deck li,
+ol#next_picker li {
+  display: inline-block;
+  margin-right: 1rem;
+}
+ol#deck li:last-child,
+ol#next_picker li:last-child {
+  margin-right: 0;
+}
+ol#deck li,
+ol#next_picker li {
+  margin: 0;
+  margin-right: -1rem;
+}
+ol#deck li:last-child figure.card img {
+  transform: scale(120%) rotateZ(13deg) translateY(-0.25rem);
+  animation: none;
+}
+ol#next_picker button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+ol#next_picker button:hover figure.card img {
+  transform: scale(120%) rotateZ(6deg) translateY(-0.25rem);
+  animation: none;
+}
+ol#next_picker button:hover figure.card figcaption {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+figure.card {
+  display: grid;
+  width: 4rem;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 4rem;
+  grid-template-areas: "img" "caption";
+  margin: 0;
+}
+figure.card img {
+  width: 4rem;
+  height: auto;
+  grid-area: img;
+}
+figure.card figcaption {
+  text-align: left;
+  grid-area: caption;
+}
+@keyframes card1 {
+  0% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: rotate(5deg);
+  }
+}
+@keyframes card2 {
+  0% {
+    transform: rotate(7deg);
+  }
+  100% {
+    transform: rotate(1deg);
+  }
+}
+@keyframes card3 {
+  0% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(1deg);
+  }
+}
+@keyframes card4 {
+  0% {
+    transform: rotate(-6deg);
+  }
+  100% {
+    transform: rotate(-1deg);
+  }
+}
+@keyframes card5 {
+  0% {
+    transform: rotate(3deg);
+  }
+  100% {
+    transform: rotate(-3deg);
+  }
+}
+body.gratuitous {
+  background-image:
+    linear-gradient(
+      19deg,
+      #1E3D2F 25%,
+      #244838 25%,
+      #244838 50%,
+      #1E3D2F 50%,
+      #1E3D2F 75%,
+      #244838 75%,
+      #244838 100%);
+  background-size: 491.45px 169.22px;
+}
+body.gratuitous figure.card img {
+  animation-name: card1;
+  animation-duration: 15s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+}
+body.gratuitous figure.card-dn-1 img {
+  animation-name: card2;
+  animation-duration: 11s;
+}
+body.gratuitous figure.card-dn-2 img {
+  animation-name: card2;
+  animation-duration: 12s;
+}
+body.gratuitous figure.card-dn-3 img {
+  animation-name: card2;
+  animation-duration: 13s;
+}
+body.gratuitous figure.card-dn-4 img {
+  animation-name: card2;
+  animation-duration: 14s;
+}
+body.gratuitous figure.card-dn-5 img {
+  animation-name: card2;
+  animation-duration: 15s;
+}
+body.gratuitous figure.card-dn-6 img {
+  animation-name: card2;
+  animation-duration: 16s;
+}
+body.gratuitous figure.card-dn-7 img {
+  animation-name: card2;
+  animation-duration: 17s;
+}
+body.gratuitous figure.card-dn-8 img {
+  animation-name: card2;
+  animation-duration: 18s;
+}
+body.gratuitous figure.card-dn-9 img {
+  animation-name: card2;
+  animation-duration: 19s;
+}
+body.gratuitous figure.card-dn-10 img {
+  animation-name: card2;
+  animation-duration: 20s;
+}
+body.gratuitous figure.card-dn-11 img {
+  animation: card3;
+  animation-duration: 11s;
+}
+body.gratuitous figure.card-dn-12 img {
+  animation: card3;
+  animation-duration: 12s;
+}
+body.gratuitous figure.card-dn-13 img {
+  animation: card3;
+  animation-duration: 13s;
+}
+body.gratuitous figure.card-dn-14 img {
+  animation: card3;
+  animation-duration: 14s;
+}
+body.gratuitous figure.card-dn-15 img {
+  animation: card3;
+  animation-duration: 15s;
+}
+body.gratuitous figure.card-dn-16 img {
+  animation: card3;
+  animation-duration: 16s;
+}
+body.gratuitous figure.card-dn-17 img {
+  animation: card3;
+  animation-duration: 17s;
+}
+body.gratuitous figure.card-dn-18 img {
+  animation: card3;
+  animation-duration: 18s;
+}
+body.gratuitous figure.card-dn-19 img {
+  animation: card3;
+  animation-duration: 19s;
+}
+body.gratuitous figure.card-dn-20 img {
+  animation: card3;
+  animation-duration: 20s;
+}
+body.gratuitous figure.card-dn-21 img {
+  animation: card4;
+  animation-duration: 11s;
+}
+body.gratuitous figure.card-dn-22 img {
+  animation: card4;
+  animation-duration: 12s;
+}
+body.gratuitous figure.card-dn-23 img {
+  animation: card4;
+  animation-duration: 13s;
+}
+body.gratuitous figure.card-dn-24 img {
+  animation: card4;
+  animation-duration: 14s;
+}
+body.gratuitous figure.card-dn-25 img {
+  animation: card4;
+  animation-duration: 15s;
+}
+body.gratuitous figure.card-dn-26 img {
+  animation: card4;
+  animation-duration: 16s;
+}
+body.gratuitous figure.card-dn-27 img {
+  animation: card4;
+  animation-duration: 17s;
+}
+body.gratuitous figure.card-dn-28 img {
+  animation: card4;
+  animation-duration: 18s;
+}
+body.gratuitous figure.card-dn-29 img {
+  animation: card4;
+  animation-duration: 19s;
+}
+body.gratuitous figure.card-dn-30 img {
+  animation: card4;
+  animation-duration: 20s;
+}
+body.gratuitous figure.card-dn-31 img {
+  animation: card5;
+  animation-duration: 11s;
+}
+body.gratuitous figure.card-dn-32 img {
+  animation: card5;
+  animation-duration: 12s;
+}
+body.gratuitous figure.card-dn-33 img {
+  animation: card5;
+  animation-duration: 13s;
+}
+body.gratuitous figure.card-dn-34 img {
+  animation: card5;
+  animation-duration: 14s;
+}
+body.gratuitous figure.card-dn-35 img {
+  animation: card5;
+  animation-duration: 15s;
+}
+body.gratuitous figure.card-dn-36 img {
+  animation: card5;
+  animation-duration: 16s;
+}
+body.gratuitous figure.card-dn-37 img {
+  animation: card5;
+  animation-duration: 17s;
+}
+body.gratuitous figure.card-dn-38 img {
+  animation: card5;
+  animation-duration: 18s;
+}
+body.gratuitous figure.card-dn-39 img {
+  animation: card5;
+  animation-duration: 19s;
+}
+body.gratuitous figure.card-dn-40 img {
+  animation: card5;
+  animation-duration: 20s;
+}
+body.gratuitous figure.card-dn-41 img {
+  animation-duration: 11s;
+}
+body.gratuitous figure.card-dn-42 img {
+  animation-duration: 12s;
+}
+body.gratuitous figure.card-dn-43 img {
+  animation-duration: 13s;
+}
+body.gratuitous figure.card-dn-44 img {
+  animation-duration: 14s;
+}
+body.gratuitous figure.card-dn-45 img {
+  animation-duration: 15s;
+}
+body.gratuitous figure.card-dn-46 img {
+  animation-duration: 16s;
+}
+body.gratuitous figure.card-dn-47 img {
+  animation-duration: 17s;
+}
+body.gratuitous figure.card-dn-48 img {
+  animation-duration: 18s;
+}
+body.gratuitous figure.card-dn-49 img {
+  animation-duration: 19s;
+}
+body.gratuitous figure.card-dn-50 img {
+  animation-duration: 20s;
+}
+body.gratuitous figure.card-dn-51 img {
+  animation-duration: 21s;
+}
+body.gratuitous figure.card-dn-52 img {
+  animation-duration: 22s;
+}
+body.gratuitous figure.card-dn-2 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-4 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-6 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-8 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-10 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-12 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-14 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-16 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-18 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-20 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-22 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-24 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-26 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-28 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-30 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-32 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-34 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-36 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-38 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-40 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-42 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-44 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-46 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-48 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-50 img {
+  animation-direction: alternate-reverse;
+}
+body.gratuitous figure.card-dn-52 img {
+  animation-direction: alternate-reverse;
+}
+.options {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.5rem;
+  border: 1px solid #c6b453;
+  border-width: 0 0 1px 1px;
+}
+
+/* css/app.css */

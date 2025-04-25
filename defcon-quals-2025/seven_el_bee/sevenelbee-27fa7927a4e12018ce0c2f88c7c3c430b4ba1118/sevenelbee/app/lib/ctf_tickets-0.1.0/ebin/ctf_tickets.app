@@ -1,0 +1,9 @@
+{application,ctf_tickets,
+             [{modules,['Elixir.CtfTickets','Elixir.CtfTickets.Receipt',
+                        'Elixir.CtfTickets.Sockaddr',
+                        'Elixir.CtfTickets.Ticket']},
+              {optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger,libsodium]},
+              {description,"ctf_tickets"},
+              {registered,[]},
+              {vsn,"0.1.0"}]}.
