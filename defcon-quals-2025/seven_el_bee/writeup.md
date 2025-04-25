@@ -10,7 +10,7 @@ We are given compiled elixer bytecode, which serves to obsufuscate the implement
 * `decompalitation`: The decompiled elixer bytecode of the prng module.
 * `solve.py`: The solution script that uses the PRNG to predict the next 5 cards.
 * `lcg.py`: A testing script used to reverse the behavior of the PRNG.
-* `sevenelbee-27fa7927a4e12018ce0c2f88c7c3c430b4ba1118/`: The directory containing the implementation of the challenge.
+* `sevenelbee-27fa7927a4e12018ce0c2f88c7c3c430b4ba1118.tar.gz`: The directory containing the implementation of the challenge. Must be unzipped to run and inspect the challenge locally.
     * `bin`: contains the start scripts for the server and the challenge itself.
     * `erts-15.2.2`: contains essentially elixer stlib code and runtimes and such, not relevant to the challenge.
     * `lib`: contains all of the elixer libraries used to implement the challenge.
@@ -19,6 +19,7 @@ We are given compiled elixer bytecode, which serves to obsufuscate the implement
             * `Elixir.SevenElBee.ErraticDeck.beam`: the elixer bytecode for the deck itself.
 * `Dockerfile`: The dockerfile used to build the container for the challenge.
 * `cards.txt`: A text file containing an example of the first 52 cards drawn from the deck, used to find the initial state of the PRNG.
+* `images/`: A directory containing images of the challenge and the output of the solution script.
 * There are lots more files floating around the app directory, but they are not relevant to the challenge.
 
 
@@ -251,7 +252,19 @@ To solve this problem, we would need a longer seed, or longer state (something l
 
 ## Configuration Notes
 
-The dockerfile is not set up to run the server automatically, so first run the dockerfile in interactive mode, and then run the following command to start the server::
+To unzip the challenge tar file, run the following command:
+```
+tar -xvf sevenelbee-27fa7927a4e12018ce0c2f88c7c3c430b4ba1118.tar.gz
+```
+
+This will create a directory called `sevenelbee-27fa7927a4e12018ce0c2f88c7c3c430b4ba1118`, which contains the challenge files.
+
+The dockerfile is not set up to run the server automatically, so first run the dockerfile in interactive mode, and then run the following command to start the server:
+```
+docker build -t sevenelbee .
+docker run -it --rm -p 4000:4000 sevenelbee
+```
+Then, inside that shell
 ```
 /./app/sevenelbee/app/bin/server
 ```
