@@ -215,7 +215,7 @@ Executing the solve script results in the flag being printed: `picoCTF{37240bd30
 
 ## Exploitation: Level 4
 
-Level 4 of this challenge is very long and tedious and involved manual assembly translation. Or, there is another way to do it that I am not thinking of... anyways, part 4 will come at a later date :) 
+Level 4 of this challenge is very long and tedious and involves manual assembly translation. Or, there is another way to do it that I am not thinking of... anyways, part 4 will come at a later date :) 
 
 ## Remediation
 
