@@ -3,9 +3,9 @@
 # PicoCTF: Some Assembly Required 
 
 This README contains writeups for all levels of Some Assembly Required. Because levels 1 and 2 are quite simple, I've only breifly described those levels and have written more in-depth explanations for levels 3 and 4.
-- Level 1: http://mercury.picoctf.net:26318/index.html
-- Level 2: http://mercury.picoctf.net:61778/index.html
-- Level 3: http://mercury.picoctf.net:47240/index.html
+- [Level 1](http://mercury.picoctf.net:26318/index.html)
+- [Level 2](http://mercury.picoctf.net:61778/index.html)
+- [Level 3](http://mercury.picoctf.net:47240/index.html)
 
 ## Context (all levels)
 
@@ -36,6 +36,13 @@ A useful tool for dealing with WASM and WAT files is [this WASM decompiler by Bi
 `wasm-decompile input.wasm -o output.wat`
 
 Another useful tool is the [Web Assembly Toolkit](https://github.com/WebAssembly/wabt). I found this one to be less helpful for this challenge, but it's nice to have on hand!
+
+Web Assembly files can "export" certain functions/variables to be accessed in other scripts, like in JavaScript:
+
+```WAT
+export global input:int = 1072;
+export global key:int = 1067;
+```
 
 ## Vulnerability (all levels)
 
@@ -124,8 +131,35 @@ __table_base
  u!
 ```
 
-We realize we need to get more information to solve this level. Recall that WebAssembly binaries can be decompiled to wat formats.
+We realize we need to get more information to solve this level. Recall that WebAssembly binaries can be decompiled to WAT formats to be more easily read:
 
+`wasm-decompile exec.wasm -o decompiled_wasm.wat`
+
+Indeed, we see a more human-readable assembly-like format (see `level-3/decompiled_wasm.wat` for complete source code). Before taking the time to analyze the WAT file, I also decided to look at the JavaScript we found earlier.
+
+The raw JavaScript (seen in `level-3/src.js`) is obfuscated and very hard to read. I started by passing it into a [JavaScript deobfuscator](https://deobfuscate.io/) and then manually deobfuscated. I realized the array given at the beginning of the file represented the strings needed to fill in the rest of the file. The (mostly) deobfuscated JavaScript can be found at `level-3/src_clean.js`. This is what we see is happening in the file:
+
+- A function grabs the first element of the given array of strings
+- A function rotates the members of the array until a certain stopping condition is met. This stopping condition is when a certain algorithm determined by a series of parsed strings matches the passed in integer.
+- A function fetches the Web Assembly code corresponding with the challenge and grabs its exports.
+- A function that we see in the source HTML (onButtonPress) grabs the user's input flag, performs a `copy_char` function on it for its entire length, and then performs a `check_flag` operation on it. Both of these external functions are referred to with "exports", so we know we must refer to the WASM/WAT file to see what those functions do.
+
+Next we analyze the `decompiled_wasm.wat` file and find the following:
+- We have a memory region assigned `global g_a:int = 66864;`
+- We also have input and key memory regions:`export global input:int = 1072; export global key:int = 1067;`
+- The data stored in those input and key regions is shown:
+```WAT
+data d_nA372e6(offset: 1024) =
+  "\9dn\93\c8\b2\b9A\8b\94\c6\df3\c0\c5\95\de7\c3\9f\93\df?\c9\c3\c2\8c2\93"
+  "\90\c1\8ee\95\9f\c2\8c6\c8\95\c0\90\00\00"; //flag
+data d_b(offset: 1067) = "\f1\a7\f0\07\ed"; //key
+```
+- There are some basic `strcmp` and `check_flag` functions.
+- There is a `copy` flag, which we see performs some specific operations to its inputs. We realize that this what `copy_char` was referencing in the JavaScript file. Therefore, that means that this is the string scrambling function performed on the flag data specified above.
+
+Our task is to analyze this `copy` function and perform the same operations on the flag data.
+
+...
 
 
 ## Remediation
