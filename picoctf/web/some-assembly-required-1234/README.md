@@ -17,7 +17,25 @@ We are provided with a URL that brings us to a very simple site that prompts us 
 
 WebAssembly (WASM) is a binary format for executable files that aims to make low-level programs in C, C++, and Rust more portable and used in web environments. Web Assembly Text Format (WAT) is the human-readable version of WASM. It is easy to read and resembles the register-by-register format of other assembly languages.
 
+```WAT
+export function strcmp(a:int, b:int):int { // func1
+  var c:int = g_a;
+  var d:int = 32;
+  var e:int = c - d;
+  e[6]:int = a;
+  e[5]:int = b;
+  var f:int = e[6]:int;
+  e[4]:int = f;
+  var g:int = e[5]:int;
+  e[3]:int = g;
+  ...
+```
 
+A useful tool for dealing with WASM and WAT files is [this WASM decompiler by Binaryen](https://github.com/WebAssembly/binaryen). This gives access to a useful WASM to WAT decompiler command:
+
+`wasm-decompile input.wasm -o output.wat`
+
+Another useful tool is the [Web Assembly Toolkit](https://github.com/WebAssembly/wabt). I found this one to be less helpful for this challenge, but it's nice to have on hand!
 
 ## Vulnerability (all levels)
 
@@ -117,3 +135,5 @@ A vulnerability we see here is that critical information is not secured, and the
 # Sources/Credits
 
 Written by Madalina Stoicov
+
+- https://en.wikipedia.org/wiki/WebAssembly
