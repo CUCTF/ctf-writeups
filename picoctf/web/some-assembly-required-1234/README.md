@@ -155,7 +155,7 @@ data d_nA372e6(offset: 1024) =
 data d_b(offset: 1067) = "\f1\a7\f0\07\ed"; //key
 ```
 - There are some basic `strcmp` and `check_flag` functions.
-- There is a `copy` flag, which we see performs some specific operations to its inputs. We realize that this what `copy_char` was referencing in the JavaScript file. Therefore, that means that this is the string scrambling function performed on the flag data specified above.
+- There is a `copy` function, which we see performs some specific operations to its inputs. We realize that this what `copy_char` was referencing in the JavaScript file. Therefore, that means that this is the string scrambling function performed on the flag data specified above.
 
 Our task is to analyze this `copy` function and perform the same operations on the flag data.
 
@@ -186,12 +186,34 @@ function copy(a:int, b:int) { // func3
   s[1072] = r;
 }
 ```
+After analyzing the function, we see it does the following:
 
-After analyzing the WAT file, we find that the `copy` function does the following:
+- Go through each element of the flag data and grab the ASCII value of it, as well the as number iteration you're on (i)
+- Perform `4 - (b % 5)` to get the index of the key
+- XOR the ASCII value with the key[idx]
 
+We may translate these steps into Python to make our solve script:
 
-...
+```Python
+flag = "\x9dn\x93\xc8\xb2\xb9A\x8b\x94\xc6\xdf3\xc0\xc5\x95\xde7\xc3\x9f\x93\xdf?\xc9\xc3\xc2\x8c2\x93\x90\xc1\x8ee\x95\x9f\xc2\x8c6\xc8\x95\xc0\x90\x00\x00"
+key = "\xf1\xa7\xf0\x07\xed"
 
+for i in range (len(flag)):
+    a = ord(flag[i])
+    b = i
+
+    idx = 4 - (b % 5)
+
+    key_val = key[idx]
+
+    r = a ^ ord(key_val)
+
+    print(chr(r), end="")
+```
+
+Executing the solve script results in the flag being printed: `picoCTF{37240bd3038b289d3a5c70cbe83a1821}`
+
+## Exploitation: Level 4
 
 ## Remediation
 
