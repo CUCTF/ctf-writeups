@@ -15,7 +15,9 @@ We are provided with a URL that brings us to a very simple site that prompts us 
 
 ## Background Information: WebAssembly (all levels)
 
-[Add information about web assembly here for future parts.]
+WebAssembly (WASM) is a binary format for executable files that aims to make low-level programs in C, C++, and Rust more portable and used in web environments. Web Assembly Text Format (WAT) is the human-readable version of WASM. It is easy to read and resembles the register-by-register format of other assembly languages.
+
+
 
 ## Vulnerability (all levels)
 
@@ -70,6 +72,43 @@ I tried doing the same process as level 1: grabbing the executable and running `
 Before doing some more advanced decoding, I tried running this string through some basic decoders on CyberChef. After a couple of attempts and different schemes, I found that the flag is XORd:
 
 <img src="images-sar1234/level2-XOR.png" width="600" />
+
+## Exploitation: Level 3
+
+I started solving this level by executing the same steps as levels 1 and 2: grab the executable by using `curl` and running `strings`. For this part, we don't see anything that may resemble a flag:
+
+```text
+madalinastoicov@Madalinas-MacBook-Air-2 level-3 % strings exec.wasm
+memory
+__wasm_call_ctors
+strcmp
+check_flag
+input
+copy_char
+
+__dso_handle
+__data_end
+__global_base
+__heap_base
+__memory_base
+
+__table_base
+ 
+ j!
+  F!!A
+!" ! "q!# #
+!% $ %q!& 
+!( ' (q!) & )k!* 
+!+ +
+ 
+ t!
+ 
+ u!
+```
+
+We realize we need to get more information to solve this level. Recall that WebAssembly binaries can be decompiled to wat formats.
+
+
 
 ## Remediation
 
