@@ -2,30 +2,32 @@
 
 # PicoCTF: Some Assembly Required 
 
-This README contains writeups for all levels of Some Assembly Required.
-- Level 1: http://mercury.picoctf.net:26318/index.html 
+This README contains writeups for all levels of Some Assembly Required. Because levels 1 and 2 are quite simple, I've only breifly described those levels and have written more in-depth explanations for levels 3 and 4.
+- Level 1: http://mercury.picoctf.net:26318/index.html
+- Level 2: http://mercury.picoctf.net:61778/index.html
+- Level 3: http://mercury.picoctf.net:47240/index.html
 
-## Context
+## Context (all levels)
 
-We are provided with a URL that brings us to a very simple site that prompts us to enter a flag. We are given no source code or hints.
+We are provided with a URL that brings us to a very simple site that prompts us to enter a flag. We are given no source code or hints. This is the same for all levels.
 
 ![Alt text](images-sar1234/site.png)
 
-## Background Information: WebAssembly
+## Background Information: WebAssembly (all levels)
 
 [Add information about web assembly here for future parts.]
 
-## Vulnerability
+## Vulnerability (all levels)
 
 To gather more information, I decided to inspect the website. Navigating to the Networks tab, I found a couple of interesting things.
 
 ![Alt text](images-sar1234/level-1-network-analysis.png)
 
-We see an executable file being used by the site. 
+We see an executable file being used by the site, as well as a JavaScript file. To see the files for each level, navigate the level's subdirectory. The JavaScript file can be used for levels 1 and 2, but I was able to solve those levels without it. 
 
-## Exploitation
+## Exploitation: Level 1
 
-To try to see what it may do, I decided to `curl` it by doing `curl http://mercury.picoctf.net:26318/JIFxzHyW8W > exec`. To get more information about what kind of executable this is, I did `file exec`:
+To try to see what the exectable may do, I decided to `curl` it by doing `curl http://mercury.picoctf.net:26318/JIFxzHyW8W > exec`. To get more information about what kind of executable this is, I did `file exec`:
 
 `exec.wasm: WebAssembly (wasm) binary module version 0x1 (MVP)`
 
@@ -56,6 +58,16 @@ __table_base
 !+ +
 +picoCTF{8857462f9e30faae4d037e5e25fee1ce}
 ```
+
+## Exploitation: Level 2
+
+I tried doing the same process as level 1: grabbing the executable and running `strings` on it. However, I see that that the flag seems to be encoded this time: 
+
+`xakgK\5cNs((j:l9<mimk?:k;9;8=8?=0?>jnn:j=lu`
+
+Before doing some more advanced decoding, I tried running this string through some basic decoders on CyberChef. After a couple of attempts and different schemes, I found that the flag is XORd:
+
+[Enter image here]
 
 ## Remediation
 
