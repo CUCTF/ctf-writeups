@@ -11,7 +11,7 @@ This README contains writeups for all levels of Some Assembly Required. Because 
 
 We are provided with a URL that brings us to a very simple site that prompts us to enter a flag. We are given no source code or hints. This is the same for all levels.
 
-![Alt text](images-sar1234/site.png)
+<img src="images-sar1234/site.png" width="300" />
 
 ## Background Information: WebAssembly (all levels)
 
@@ -21,7 +21,7 @@ We are provided with a URL that brings us to a very simple site that prompts us 
 
 To gather more information, I decided to inspect the website. Navigating to the Networks tab, I found a couple of interesting things.
 
-![Alt text](images-sar1234/level-1-network-analysis.png)
+<img src="images-sar1234/level-1-network-analysis.png" width="1000" />
 
 We see an executable file being used by the site, as well as a JavaScript file. To see the files for each level, navigate the level's subdirectory. The JavaScript file can be used for levels 1 and 2, but I was able to solve those levels without it. 
 
@@ -67,7 +67,7 @@ I tried doing the same process as level 1: grabbing the executable and running `
 
 Before doing some more advanced decoding, I tried running this string through some basic decoders on CyberChef. After a couple of attempts and different schemes, I found that the flag is XORd:
 
-[Enter image here]
+<img src="images-sar1234/level2-XOR.png" width="600" />
 
 ## Remediation
 
