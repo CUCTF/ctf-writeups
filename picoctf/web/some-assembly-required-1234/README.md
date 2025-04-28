@@ -159,6 +159,37 @@ data d_b(offset: 1067) = "\f1\a7\f0\07\ed"; //key
 
 Our task is to analyze this `copy` function and perform the same operations on the flag data.
 
+```WAT
+function copy(a:int, b:int) { // func3
+  var c:int = g_a;
+  var d:int = 16;
+  var e:int_ptr = c - d;
+  e[3] = a;
+  e[2] = b;
+  var f:int = e[3];
+  if (eqz(f)) goto B_a;
+  var g:int = 4;
+  var h:int = e[2];
+  var i:int = 5;
+  var j:int = h % i;
+  var k:ubyte_ptr = g - j;
+  var l:int = k[1067];
+  var m:int = 24;
+  var n:int = l << m;
+  var o:int = n >> m;
+  var p:int = e[3];
+  var q:int = p ^ o;
+  e[3] = q;
+  label B_a:
+  var r:int = e[3];
+  var s:byte_ptr = e[2];
+  s[1072] = r;
+}
+```
+
+After analyzing the WAT file, we find that the `copy` function does the following:
+
+
 ...
 
 
