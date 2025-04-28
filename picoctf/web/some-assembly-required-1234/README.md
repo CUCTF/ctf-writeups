@@ -215,9 +215,11 @@ Executing the solve script results in the flag being printed: `picoCTF{37240bd30
 
 ## Exploitation: Level 4
 
+Level 4 of this challenge is very long and tedious and involved manual assembly translation. Or, there is another way to do it that I am not thinking of... anyways, part 4 will come at a later date :) 
+
 ## Remediation
 
-A vulnerability we see here is that critical information is not secured, and therefore can be easily seen amongst the rest of a binary file. One way to prevent this could be encrypting this data. Or, not making the binary file available to the client is also an option.
+There are multiple vulnerabilities in these challenges that could be patched. Firstly, the JavaScript obfuscation was very easy to undo, so some stronger obfuscation would prevent the script from being un-translated. Another obvious fix is to not calculate flag data client-side, but instead do those operations server-side where a user can't just access the object file. Another option may be making the WASM file harder to decompile.
 
 # Sources/Credits
 
