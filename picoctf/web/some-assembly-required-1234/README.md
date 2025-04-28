@@ -23,7 +23,9 @@ To gather more information, I decided to inspect the website. Navigating to the 
 
 <img src="images-sar1234/level-1-network-analysis.png" width="1000" />
 
-We see an executable file being used by the site, as well as a JavaScript file. To see the files for each level, navigate the level's subdirectory. The JavaScript file can be used for levels 1 and 2, but I was able to solve those levels without it. 
+We see an executable file being used by the site, as well as a JavaScript file. 
+
+Note: To see the files for each level, navigate to the level's subdirectory. The JavaScript file can be used for levels 1 and 2, but I was able to solve those levels without it, and therefore they are not included in the level subdirectories.
 
 ## Exploitation: Level 1
 
