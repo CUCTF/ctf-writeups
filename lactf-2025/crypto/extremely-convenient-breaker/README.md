@@ -1,6 +1,9 @@
 # Extremely Convenient Breaker 
 ## Summary
-This challenge uses an insecure implementation of AES encryption with an oracle to allow the user to decrypt the flag.
+This challenge uses an insecure implementation of AES encryption (AES EBC mode) with an oracle to allow the user to decrypt the flag with a chosen ciphertext attack.
+
+The attacker can decrypt the flag in two chunks, as the the server uses ECB mode and gives a decryption oracle, so blocks will always be decrypted and encrytped the same way.
+The attacker can then stitch the two chunks together to get the full flag.
 
 **Artifacts:**
 * `chall.py`: vulnerable python process which communicates over a socket
@@ -25,7 +28,7 @@ The server then encrypts the flag with the line: `cipher = AES.new(key, AES.MODE
 
 The program then enters a loop, where the server allows the user to input a ciphertext to decrypt. Before decrypting the ciphertext, the server checks to make sure the ciphertext is the same number of bytes (64) and that it is not the same as the encrypted flag. If the ciphertext is valid, the server decrypts the ciphertext and sends the decrypted plaintext back to the user.
 
-## Vurnability
+## Vulnerability 
 While it is generally bad form to allow an attacker to make arbitrary calls to a decryption function, the real problem here is that the server uses electronic code book (ECB) mode. 
 
 AES is a block cipher, meaning that it encrypts 16 bytes at a time. In most modes, such as cipher block chaining (CBC), the ciphertext is dependent on the previous ciphertext. In other commonly used modes, like counter (CTR) mode, the ciphertext is dependent on a nonce and a counter, which allows for faster computation while ensuring a given block of plaintext will be encrypted to a different ciphertext on successive encryptions.
@@ -55,7 +58,8 @@ The program checks to ensure the flag ciphertext is not being decrypted directly
 
 **Exploit Description**: The program creates a key, encrypts the flag, and then allows the user to decrypt arbitrary ciphertexts. The user can send any ciphertext they want, as long as it is 64 bytes and not the encrypted flag, but it only checks against the complete ciphertext. Since there are 4 blocks being decrypted each time, we can decrypt the flag 3 blocks at a time.
 
-To construct the attack, we will first read in the encrypted flag. Then we will send the flag with the last byte altered (by xoring with 0x01). This will give us a valid decryption for the first 4 blocks of the flag.
+To construct the attack, we will first recieve the encrypted flag from the server. 
+Then we will send the flag with the last byte altered (by xoring with 0x01). This will give us a valid decryption for the first 4 blocks of the flag.
 ```
 |--valid--|--valid--|--valid--|--TRASH--|
 ```
@@ -68,6 +72,7 @@ By stitching these together, we can find the complete flag, and solve the challe
 **Exploit primitives used**: 
 * decrypting arbitrary ciphertexts (decryption oracle)
 * AES ECB mode
+* Chosen ciphertext attack
 
 
 ## Remediation
