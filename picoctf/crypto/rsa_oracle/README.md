@@ -29,8 +29,7 @@ The challenge also gives us several hints along with this challenge
 * The key to getting the flag is by sending a custom message to the server by taking advantage of the RSA encryption algorithm.
 * Minimum requirements for a useful cryptosystem is CPA security.
 
-Since we know that the message, or `secret.enc`, is encrypted with AES, we can deduce that or task is to decode the encrypted password into
-a valid decryption key for AES by using the oracle.
+We know that the message, or `secret.enc`, is encrypted with AES, as given in the hints by the challenge authors. In order to decrypt AES, we need a 32-byte key, which is `password.enc` which is encrypted with RSA. Our task is to decode the encrypted password using the oracle into a valid decryption key for AES, so that we can decode the message.
 
 ## Vulnerability
 
@@ -65,7 +64,7 @@ The oracle decrypts this ciphertext using the given decryption algorithm, as it 
 
 $D \equiv (2^e \cdot p^e)^d \equiv 2^{ed}\cdot p^{ed} \equiv 2^1 \cdot p^1  \equiv 2 \cdot p \pmod{n}$
 
-We can see that $D$ is equal to the recovered password $p$ multiplied by our chosen plaintext $2$. To recover $p$, we simply divide the value $D$ by $2$.
+We can see that $D$ is equal to the recovered password $p$ multiplied by our chosen plaintext $2$. To recover $p$, we simply multiply the value $D$ by $2^{-1}$.
 
 ## Exploitation
 
@@ -77,8 +76,7 @@ After recovering the password, we use AES to uncover the intercepted message, wh
 
 **Exploit mitigation considerations:**
 
-Access to the oracle could be limited, which can reduce the feasability of chosen ciphertext attacks, however, this
-doesn't address the vulnerabilities in implementing RSA without padding.
+Access to the oracle could be limited, which can reduce the feasability of chosen ciphertext attacks, however, this doesn't prevent the exploit on textbook RSA.
 
 **Exploit description:**
 
@@ -95,7 +93,7 @@ Then, we use the password to decrypt the AES-encrypted message and retrieve the 
 
 ## Remediation
 
-Chosen plaintext and chosen ciphertext attacks can be prevented by implementing RSA with a cryptographically secure padding scheme,
+Textbook RSA should never be used. Chosen plaintext and chosen ciphertext attacks can be prevented by implementing RSA with a cryptographically secure padding scheme,
 such as OAEP (Optimal Asymmetric Encryption Padding). This introduces randomness into the encryption process which provides semantic security
 by preventing the deterministic nature of RSA from being exploited.
 
