@@ -132,6 +132,8 @@ From this script we are able to calculate the key needed for the specific set of
 
 This kind of challenge is not something you would find naturally as an exploit, but it shows how easy it can be to reassemble a PNG if all we need are the first 16 bytes. To make this reassembling more difficult, the key could be longer (so we would need to iterate through possible values of width and length, etc.), the unscrambling algorithm could be more complex, or the key could include both letters and numbers (so we would have to iterate through more possible values for the key).
 
+For a more real-world application: this challenge resembles the vulnerabilities in encryption schemes like AES ECB. This kind of encryption goes block-by-block, so once you know one, you know them all. AES CBC is similar, but each block is XOR'd with the previous block, so it's harder to find the pattern. This CTF could use some inter-block mechanism to secure all of the blocks.
+
 # Sources/Credits
 
 Written by Madalina Stoicov
