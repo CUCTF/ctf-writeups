@@ -1,0 +1,8 @@
+services:
+  kalmarvm:
+    build: .
+    ports:
+      - "1337:1337"
+    devices:
+      - /dev/kvm
+    restart: always
