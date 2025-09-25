@@ -69,36 +69,44 @@ Stripped:   No
 
 ## Vulnerability
 
-The `kvmtool` code has an out-of-bounds read vulnerability in the virtqueue
-notification handling of the PCI-based `virtio` balloon device emulator,
-at line 235 of `virtio/balloon.c`, which can be combined with an in-bounds write
-to get code execution. This vulnerability is quite similar to
-[CVE-2021-45464](https://nvd.nist.gov/vuln/detail/CVE-2021-45464), discovered
-in KalmarCTF 2023.
+### Overview
 
-The core vulnerability is in the [`notify_vq` function](https://github.com/kvmtool/kvmtool/blob/e48563f5c4a48fe6a6bc2a98a9a7c84a10f043be/virtio/balloon.c#L231), which is called by `virtio_pci__notify_write` when the
-guest triggers a previously-registered `mmio` callback by writing to a dedicated
-memory-mapped I/O region in the guest physical address (GPA) space. This mechanism
-is normally used by guest `virtio` kernel drivers to 'kick' their corresponding
-back-end device, letting the device know that there is fresh data in a `virt_queue`
-(a shared structure in the GPA space). The front-end (guest) driver indicates which
-queue the back-end (host) device should check with a 32-bit index, `u32 vq`.
+In [the `notify_vq` function from `virtio/balloon.c`](https://github.com/kvmtool/kvmtool/blob/e48563f5c4a48fe6a6bc2a98a9a7c84a10f043be/virtio/balloon.c#L235),
+kvmtool's `virtio` balloon device emulator (which runs in the userspace `lkvm`
+process on the host) sends a 'job' to its background thread pool, selecting which
+job structure to be executed by indexing based on a guest-controlled parameter
+without bounds-checking. This out-of-bounds read vulnerability allows the guest
+to hijack the thread poolvand take over the host `lkvm` process. This vulnerability
+is quite similar tov[CVE-2021-45464](https://nvd.nist.gov/vuln/detail/CVE-2021-45464),
+discovered in KalmarCTF 2023.
 
-A non-malicious balloon driver would use this kind of notification to let the device
-know that it had successfully acquired/given up new pages in the guest ('inflated'
-or 'deflated', respectively), or that it had placed requested statistics in the
-`stats` virtqueue.
+### Details
 
-To handle these events asynchronously, the back-end balloon device emulator (which
-runs in the host user address space) retrieves a `struct thread_pool__job` pointer
-from a global array of 'job' structures (indexed by `vq`), and enqueues this
-pointer into a work queue for a background threads to pick up:
+The vulnerable [`notify_vq` function](https://github.com/kvmtool/kvmtool/blob/e48563f5c4a48fe6a6bc2a98a9a7c84a10f043be/virtio/balloon.c#L231)
+shown below is usually called (via a chain originating with an `mmio` callback)
+to allow the virtual machine manager to execute some host-side emulation code whenever
+a guest driver 'kicks' the host by writing to a dedicated memory-mapped I/O region
+in the guest physical address (GPA) space.
+
+In order to identify which 'virtual queue' in guest memory the host has been asked
+to examine, this callback reads a 32-bit index `vq` from the guest-controlled `mmio`
+region. In the case of the virtio balloon device, this index selects one of three
+possible virtqueues to indicate that the guest driver had successfully acquired
+guest pages ('inflated'), released guest pages ('deflated'), or had computed some
+statistics of interest to the host emulator. The host expects the guest driver to
+have already placed details specific to each action in a fixed range of guest
+memory. 
+
+`notify_vq` allows the host-side balloon device emulator to handle these events
+asynchronously by retrieving a `struct thread_pool__job` pointer from a global
+array of 'job' structures (indexed by `vq`), and enqueuing this pointer into a
+work queue for a background threads to pick up:
 ```C
 static int notify_vq(struct kvm *kvm, void *dev, u32 vq)
 {
 	struct bln_dev *bdev = dev;
 
-	thread_pool__do_job(&bdev->jobs[vq]);
+	thread_pool__do_job(&bdev->jobs[vq]); /* line 235 */
 
 	return 0;
 }
@@ -113,7 +121,7 @@ the `thread_pool__do_job` function to execute with a pointer up to
 sizeof(struct thread_pool__job)*0xFFFFFFFF = 0x57FFFFFFA8
 ```
 
-bytes beyond the global `bdev->jobs` array.
+bytes beyond the global `bdev->jobs` array in the host `lkvm` process address space.
 
 
 This out-of-bounds read by itself allows the guest to crash the VMM in the host
