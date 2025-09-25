@@ -3,7 +3,10 @@
 
 This challenge provides root access to a Linux VM, managed by a Linux host.
 The challenge is to escape the VM, and get code execution on the Linux host via
-a real vulnerability in the `kvmtool` `virtio-pci` interface.
+a real vulnerability in the `kvmtool` `virtio-pci` interface. The vulnerability
+is a guest-controlled, out-of-bounds read which allows arbitrary code execution
+in the host `lkvm` process.
+
 
 **Challenge Artifacts:**
 * `chall/bzImage`: A compiled 6.13.4 Linux Kernel, used as the guest OS
