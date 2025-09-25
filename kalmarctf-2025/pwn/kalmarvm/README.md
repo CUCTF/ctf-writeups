@@ -356,7 +356,7 @@ and the remote shell will launch on the host:
 
 
 ## Remediation
-Remediation for this exact bug would be straightforward: add a bounds check to the
+Remediation for this particular bug are straightforward: add a bounds check to the
 `u32 vq` input in the `notify_vq` function (or preferably, earlier in the overall
 `virtio-pci` framework).
 
@@ -364,6 +364,22 @@ However, the more general problem with the `kvmtool` codebase (which probably in
 more bugs like this one, many of which are probably less obvious) is a lack of discipline
 around guest-provided inputs. In a secure hypervisor, *everything* passed from the
 guest should be considered untrusted, and should be subject to sanity checks.
+
+Even without appropriate bounds-checking, some generic mitigation techniques
+might still make exploitation more difficult or even impossible for this kind of vulnerability:
+- Randomization like PIE or ASLR might make constructing a job payload pointed at `execve`
+harder, and control flow integrity (CFI) checks might recognize that an
+indirect job call is malicious.
+- Process isolation or sandboxing of hypervisor components that directly interact with the
+guest may prevent an exploit from converting control over the isolated device emulator
+into root code execution on the host.
+- Other design changes that replace or abstract virtqueue communication with better-defined channels
+may reduce the attack surface containing these kinds of bugs, but at the cost
+of guest-to-host transfer speed.
+- Since this kind of vulnerability does not involve an out-of-bounds write,
+ protections against memory corruption like stack canaries or W^X do not prevent
+ exploitation; the malicious 'job' structure is legitimately copied into host memory
+ that the guest must be allowed to influence. 
 
 ## Configuration Notes
 
