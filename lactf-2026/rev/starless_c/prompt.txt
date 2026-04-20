@@ -1,0 +1,62 @@
+The prompt I fed to Codex to be able to solve this challenge during the competition. Note the long prompt, 
+the details, and describing how the challenge works, all of which is the human touch. The initial prompt
+was unsuccessful, so I added how I would solve the challenge myself. This added prompt is also below.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+I want you to automate this solution to this challenge:
+
+I am trying to solve a CTF challenge, starless_c. In this challenge, you are navigating a path where for each step 
+you press w, a, s, or d. You may also press "f" to jmp to a function which will print the flag. The function that 
+is jumped to (let's call it function_1, it's at LOAD:000000006767A000) does a series of instructions that causes 
+a segfault: 31 C0 88 00. Then, that function calls another function, let's call it function_2 (at LOAD:0000000067682000), 
+which also contains segfault instructions. Then, that function calls another fucntion, let's say function_3, which 
+does not contain segfault instructions. Instead it contains NOP instructions: 90 90 90 90. This function then calls 
+another function at LOAD:0000000067691000 which conatins more segfault instructions. This function then calls another 
+function at LOAD:0000000067692000 which contains more segfault instructions and then calls a function to print the flag. 
+For each of the options w, a, s, and d, it will swap instructions at some memory locations. For example, at the beginning 
+of the program, going down the "s" path will lead to the following check: if the memory address at LOAD:0000000067681000 
+contains NOP code (0x90), change that code to segfault and put the 0x90 at LOAD:0000000067689000 instead. If there was no 
+0x90, then continue to jmp to a new location. Some of these addresses are very important: they are the ones in the 5-part 
+function call to print the flag. That means, that we are able to patch some of the segfault code with NOPs only if we do
+w, a, s, d, and then press f in the exact right order. Note that we can do a bunch of w, a, s, d in various orders like 
+w, w, w, a, s, s, d, etc. When the function calls to print the flag are all appropriatley NOPed out, then we can press 
+"f" and get the flag. Something important to know is the way that the segfaults are handled. If a segfault occurs, a signal 
+handler will print out the following message: "And so the son of the fortune-teller does not find his way to the Starless 
+C. Not yet.". The success message to print out the flag is "A person this far into a challenge has their path to follow. 
+There were many paths, once, in a time that is past, lost many bytes and pages ago. Now there is only one path for you to 
+choose. The path that leads to the flag. ". Note that if you enter a w, a, s, or d, and do not get the error message, then 
+it may mean you are on the right path. This is not always gauranteed because some paths lead back to earlier parts of the code 
+so you may get stuck in a loop. Be careful! 
+
+Please find the amount of w, a, s, d, and where to press "f", to get the flag. Note that some of the paths jump back to 
+the beginning of the code or to earlier paths, so don't get stuck in a loop! Go forth and venture!
+
+Look at the file starless_c
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Here are some notes I had, which may be helpful (ignore the names of the variables and the checkpoints). This 
+shows that we can grab a NOP from one section of memory and swap it with another
+
+Plan
+Opportunity to NOP print_flag_greatgrandparent:
+	From sgloc4: 000000006768A050 (from checkpoint 6 W, jmp to checkpoint 4) → AFTER NOP SGLOC4
+Opportunity to NOP sgloc4:
+	From sgloc6: LOAD:000000006768408E eh
+	From nonsgloc1: LOAD:0000000067692050 (from checkpoint 8 W, jmp to checkpoint 6)
+Opportunity to NOP nonsgloc1: //nopped by default, but can be re-nopped if print_flag_parent is NOPped
+	From sgloc4: 000000006767A06F → this is a helpful one!!!!
+	From sgloc8: 000000006768C08E eh
+	From print_flag_parent: 000000006769A050 (from checkpoint 11 W, jmp to checkpoint 8
+Opportunity to NOP sgloc5:
+	From sgloc3: 000000006768106F (from checkpoint 1 S, jmp to checkpoint 2)
+
+Opportunity to NOP sgloc3: 
+	From nonsgloc1: 000000006768B08E (from checkpoint 9 A, jmp to checkpoint 6)
+	From sgloc5: 0000000067699050
+Opportunity to NOP print_flag_parent:
+	From nonsgloc1: 000000006768206F (from checkpoint 4 S, jmp to checkpoint 6) – last?
+	From some sc value: 000000006769408E eh
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
