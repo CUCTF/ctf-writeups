@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="split">
+    <form class="panel" method="post">
+      <h1>Compose handoff packet</h1>
+      {% if error %}
+        <p class="error">{{ error }}</p>
+      {% endif %}
+      <label>Title</label>
+      <input type="text" name="title" value="{{ request.form.get('title', '') }}">
+      <label>Body</label>
+      <textarea name="body" rows="8">{{ request.form.get('body', '') }}</textarea>
+      <label>Checklist</label>
+      <textarea name="checklist" rows="6">{{ request.form.get('checklist', '') }}</textarea>
+      <label class="checkbox">
+        <input type="checkbox" name="is_public" {% if request.form.get("is_public") == "on" %}checked{% endif %}>
+        Share on the board
+      </label>
+      <button type="submit">Save packet</button>
+    </form>
+
+    <form class="panel preview-panel" method="post" action="{{ url_for('main.preview') }}" target="_blank">
+      <h2>Quick preview</h2>
+      <p class="muted">Tip: packet previews support snippet references like <code>[[include:ops-footer.txt]]</code>.</p>
+      <label>Title</label>
+      <input type="text" name="title" value="{{ request.form.get('title', '') }}">
+      <label>Body</label>
+      <textarea name="body" rows="8">{{ request.form.get('body', '') }}</textarea>
+      <label>Checklist</label>
+      <textarea name="checklist" rows="6">{{ request.form.get('checklist', '') }}</textarea>
+      <button type="submit">Open preview window</button>
+    </form>
+  </section>
+{% endblock %}

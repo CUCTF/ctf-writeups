@@ -1,0 +1,4 @@
+Wrap up the packet with the standard handoff footer:
+- State the active incident owner
+- Confirm pager acknowledgements
+- Leave one clear next action for the incoming operator

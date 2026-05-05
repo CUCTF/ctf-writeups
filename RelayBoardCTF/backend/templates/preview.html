@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="panel">
+    <h1>Rendered preview</h1>
+    <h2>{{ rendered["title"]|safe }}</h2>
+    <pre>{{ rendered["body"]|safe }}</pre>
+    <pre>{{ rendered["checklist"]|safe }}</pre>
+  </section>
+{% endblock %}

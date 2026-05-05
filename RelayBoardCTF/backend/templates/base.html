@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RelayBoard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <a class="brand" href="{{ url_for('main.index') }}">RelayBoard</a>
+        <p class="tagline">Shift handoff packets for the overnight operations team.</p>
+      </div>
+      <nav>
+        {% if g.user %}
+          <span class="pill">{{ g.user["username"] }} / {{ session.get("role") }}</span>
+          <a href="{{ url_for('main.compose') }}">Compose Packet</a>
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}">Login</a>
+          <a href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+      </nav>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

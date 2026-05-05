@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="panel">
+    <div class="card-head">
+      <h1>{{ packet["title"] }}</h1>
+      {% if packet["is_public"] == 1 %}
+        <span class="badge">Public</span>
+      {% else %}
+        <span class="badge locked">Private</span>
+      {% endif %}
+    </div>
+    <p class="muted">Owner: {{ packet["username"] }}</p>
+    <pre>{{ packet["body"] }}</pre>
+    <pre>{{ packet["checklist"] }}</pre>
+  </section>
+{% endblock %}

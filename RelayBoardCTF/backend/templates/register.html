@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="auth">
+    <h1>Create an operator account</h1>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+      <label>Username</label>
+      <input type="text" name="username" autocomplete="off">
+      <label>Password</label>
+      <input type="password" name="password">
+      <button type="submit">Register</button>
+    </form>
+  </section>
+{% endblock %}

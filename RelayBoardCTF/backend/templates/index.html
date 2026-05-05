@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <section class="hero">
+    <h1>Operations handoff without the pager chaos</h1>
+    <p>Build packet drafts, preview shared snippets, and keep the night desk aligned.</p>
+  </section>
+
+  <section class="grid">
+    {% for packet in packets %}
+      <article class="card">
+        <div class="card-head">
+          <h2>{{ packet["title"] }}</h2>
+          {% if packet["is_public"] == 1 %}
+            <span class="badge">Public</span>
+          {% else %}
+            <span class="badge locked">Private</span>
+          {% endif %}
+        </div>
+        <p class="muted">Owner: {{ packet["username"] }}</p>
+        <p>{{ packet["body"][:140] }}{% if packet["body"]|length > 140 %}...{% endif %}</p>
+        <a class="button-link" href="{{ url_for('main.packet_detail', packet_id=packet['id']) }}">Open packet</a>
+      </article>
+    {% else %}
+      <p>No packets yet.</p>
+    {% endfor %}
+  </section>
+{% endblock %}

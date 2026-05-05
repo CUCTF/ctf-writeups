@@ -1,0 +1,11 @@
+services:
+  relayboard:
+    build: .
+    ports:
+      - "80:5000"
+    environment:
+      PORT: "5000"
+      RELAYBOARD_FLAG: "flag{night_shift_packets_need_real_boundaries}"
+      RELAYBOARD_SECRET: "relayboard-dev-secret-please-rotate"
+      RELAYBOARD_ADMIN_PASSWORD: "dispatch-only"
+    restart: unless-stopped
