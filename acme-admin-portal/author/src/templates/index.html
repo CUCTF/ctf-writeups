@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">System Dashboard</h1>
+  <span class="page-subtitle">Internal Administration Overview</span>
+</div>
+
+<div class="alert-banner warning">
+  <span class="alert-icon">⚠</span>
+  <span>This portal is intended for authorized ACME Technologies personnel only. Unauthorized access is prohibited.</span>
+</div>
+
+<div class="card-grid">
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">System Status</span>
+      <span class="badge badge-green">ONLINE</span>
+    </div>
+    <div class="stat-list">
+      <div class="stat-row">
+        <span class="stat-label">Web Server</span>
+        <span class="stat-value online">● Online</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Internal Network</span>
+        <span class="stat-value online">● Online</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">DNS Resolver</span>
+        <span class="stat-value online">● Online</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Auth Service</span>
+        <span class="stat-value offline">● Offline</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Firewall</span>
+        <span class="stat-value warn">● Degraded</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Uptime</span>
+      <span class="badge badge-blue">LIVE</span>
+    </div>
+    <div class="uptime-display">
+      <div class="uptime-number">14d 7h 32m</div>
+      <div class="uptime-label">Since last restart</div>
+    </div>
+    <div class="stat-list" style="margin-top:1.2rem">
+      <div class="stat-row">
+        <span class="stat-label">CPU Load</span>
+        <span class="stat-value">3.2%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Memory Used</span>
+        <span class="stat-value">1.1 GB / 8 GB</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Disk Usage</span>
+        <span class="stat-value">44%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Recent Alerts</span>
+      <span class="badge badge-red">3 WARN</span>
+    </div>
+    <div class="alert-list">
+      <div class="alert-item warn">
+        <span class="alert-time">17:22</span>
+        <span>Portal exposed to external IP — VPN not enforced</span>
+      </div>
+      <div class="alert-item warn">
+        <span class="alert-time">13:08</span>
+        <span>Input validation disabled on diagnostics endpoint</span>
+      </div>
+      <div class="alert-item warn">
+        <span class="alert-time">08:21</span>
+        <span>3x failed login attempts from 10.0.4.21</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Quick Access</span>
+    </div>
+    <div class="quick-links">
+      <a href="/tools" class="quick-link-btn">Network Tools</a>
+      <a href="/logs" class="quick-link-btn">View Logs</a>
+      <a href="/about" class="quick-link-btn">About Portal</a>
+    </div>
+    <div class="card-note">
+      ⓘ Authentication module is currently offline. Access is unrestricted.
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

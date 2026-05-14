@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">Network Diagnostic Tools</h1>
+  <span class="page-subtitle">IT Operations — Network Utilities</span>
+</div>
+
+<div class="alert-banner info">
+  <span class="alert-icon">ⓘ</span>
+  <span>These tools are intended for internal network diagnostics only. Results are rendered directly from the system.</span>
+</div>
+
+<div class="tools-grid">
+
+  <!-- PING UTILITY — VULNERABLE -->
+  <div class="card tool-card">
+    <div class="card-header">
+      <span class="card-title">Ping Utility</span>
+      <span class="badge badge-green">ACTIVE</span>
+    </div>
+    <p class="tool-description">
+      Send an ICMP echo request to a target host to verify connectivity.
+    </p>
+    <form action="/ping" method="get" class="tool-form">
+      <div class="input-group">
+        <label for="target" class="input-label">Target Host / IP Address</label>
+        <input
+          type="text"
+          id="target"
+          name="target"
+          class="tool-input"
+          placeholder="e.g. 8.8.8.8 or hostname"
+          value="{{ request.args.get('target', '') }}"
+          autocomplete="off"
+        />
+      </div>
+      <button type="submit" class="tool-btn">Run Ping</button>
+    </form>
+
+    {% if ping_result %}
+    <div class="result-box">
+      <div class="result-header">
+        <span>OUTPUT</span>
+        <span class="result-timestamp">{{ self.__class__.__name__ }}</span>
+      </div>
+      <pre class="result-output">{{ ping_result }}</pre>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- DNS LOOKUP — PLACEHOLDER -->
+  <div class="card tool-card disabled-tool">
+    <div class="card-header">
+      <span class="card-title">DNS Lookup</span>
+      <span class="badge badge-yellow">OFFLINE</span>
+    </div>
+    <p class="tool-description">
+      Resolve a domain name to its IP address using the internal DNS resolver.
+    </p>
+    <div class="input-group">
+      <label class="input-label">Domain Name</label>
+      <input type="text" class="tool-input" placeholder="e.g. acme-tech.internal" disabled />
+    </div>
+    <button class="tool-btn disabled" disabled>Run Lookup</button>
+    <div class="card-note">⚠ DNS module is offline — scheduled for maintenance.</div>
+  </div>
+
+  <!-- PORT SCANNER — PLACEHOLDER -->
+  <div class="card tool-card disabled-tool">
+    <div class="card-header">
+      <span class="card-title">Port Scanner</span>
+      <span class="badge badge-yellow">OFFLINE</span>
+    </div>
+    <p class="tool-description">
+      Scan a host for open TCP ports within a specified range.
+    </p>
+    <div class="input-group">
+      <label class="input-label">Target & Port Range</label>
+      <input type="text" class="tool-input" placeholder="e.g. 192.168.1.1  1-1024" disabled />
+    </div>
+    <button class="tool-btn disabled" disabled>Run Scan</button>
+    <div class="card-note">⚠ Port scanner pending security review and approval.</div>
+  </div>
+
+</div>
+
+{% endblock %}

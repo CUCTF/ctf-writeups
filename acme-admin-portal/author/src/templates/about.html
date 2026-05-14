@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">About</h1>
+  <span class="page-subtitle">ACME Technologies — Internal Admin Portal</span>
+</div>
+
+<div class="card-grid two-col">
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">About ACME Technologies</span>
+    </div>
+    <div class="about-text">
+      <p>ACME Technologies is a global infrastructure and IT operations firm providing enterprise-grade networking, monitoring, and diagnostic solutions to Fortune 500 clients.</p>
+      <p>Founded in 1998, ACME operates data centers across 14 regions and supports over 40,000 enterprise endpoints worldwide.</p>
+      <p>This internal administration portal provides IT staff with real-time network diagnostic capabilities, system health monitoring, and infrastructure management tooling.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Portal Information</span>
+    </div>
+    <div class="stat-list">
+      <div class="stat-row">
+        <span class="stat-label">Application</span>
+        <span class="stat-value">ACME Admin Portal</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Version</span>
+        <span class="stat-value">2.4.1</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Framework</span>
+        <span class="stat-value">Flask 3.x / Python 3.11</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Environment</span>
+        <span class="stat-value warn">⚠ Production (Unprotected)</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Auth Status</span>
+        <span class="stat-value offline">● Disabled</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Maintained by</span>
+        <span class="stat-value">IT Operations Team</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Contact</span>
+    </div>
+    <div class="stat-list">
+      <div class="stat-row">
+        <span class="stat-label">IT Helpdesk</span>
+        <span class="stat-value">it-help@acme-tech.internal</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Security Team</span>
+        <span class="stat-value">security@acme-tech.internal</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">NOC</span>
+        <span class="stat-value">noc@acme-tech.internal</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Emergency</span>
+        <span class="stat-value">ext. 9-1-1 (internal)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Legal & Compliance</span>
+    </div>
+    <div class="about-text">
+      <p>Access to this portal is restricted to authorized ACME Technologies employees and contractors. All activity on this system is monitored and logged.</p>
+      <p>Unauthorized access, data exfiltration, or misuse of administrative tools is a violation of company policy and may constitute a criminal offense under applicable computer fraud statutes.</p>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

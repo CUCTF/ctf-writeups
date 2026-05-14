@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+  <h1 class="page-title">System Logs</h1>
+  <span class="page-subtitle">Security & Operations Event Log</span>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Event Log — Today</span>
+    <span class="badge badge-blue">LIVE</span>
+  </div>
+  <div class="log-controls">
+    <span class="log-filter active">All</span>
+    <span class="log-filter">INFO</span>
+    <span class="log-filter">WARN</span>
+    <span class="log-filter">ERROR</span>
+  </div>
+  <pre class="log-viewer">{{ logs }}</pre>
+</div>
+
+{% endblock %}

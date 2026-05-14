@@ -1,0 +1,28 @@
+ACME Technologies — Internal Admin Notes
+========================================
+Last updated: 2024-03-15  |  Author: j.harris@acme-tech.internal
+
+REMINDERS (before next sprint):
+--------------------------------
+- [ ] Sanitize ALL user input on diagnostics endpoints
+- [ ] Remove shell=True before production deployment — THIS IS A SECURITY RISK
+- [ ] Rotate admin credentials (current ones have been shared too widely)
+- [ ] Restrict portal access to internal VPN only
+- [ ] Add authentication layer — portal is currently wide open
+- [ ] Audit subprocess calls in app.py
+
+KNOWN ISSUES:
+-------------
+- Ping utility does not validate IP format
+- DNS lookup is not yet implemented (placeholder only)
+- Port scanner stub needs backend logic
+- Log viewer loads entire log file (could be slow at scale)
+
+TEMP CREDENTIALS (DO NOT LEAVE IN PRODUCTION):
+-----------------------------------------------
+admin / admin123   <-- CHANGE THIS IMMEDIATELY
+
+NOTES FROM LAST MEETING:
+-------------------------
+Marcus flagged the diagnostics page as a potential risk vector.
+We agreed to patch before Q2 external audit. Deadline: EOD Friday.

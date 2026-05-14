@@ -1,0 +1,22 @@
+[2024-03-15 08:01:03] [INFO]  System monitoring service started
+[2024-03-15 08:01:04] [INFO]  ICMP diagnostics module initialized
+[2024-03-15 08:01:05] [INFO]  Web interface listening on 0.0.0.0:5000
+[2024-03-15 08:14:22] [INFO]  GET / — 200 OK
+[2024-03-15 08:15:01] [INFO]  GET /tools — 200 OK
+[2024-03-15 08:15:44] [WARN]  User input validation DISABLED for diagnostics endpoint (testing mode)
+[2024-03-15 08:16:02] [INFO]  Ping executed: target=8.8.8.8
+[2024-03-15 08:21:17] [WARN]  Failed login attempt from 10.0.4.21
+[2024-03-15 08:21:18] [WARN]  Failed login attempt from 10.0.4.21
+[2024-03-15 08:21:19] [WARN]  Failed login attempt from 10.0.4.21
+[2024-03-15 08:21:20] [WARN]  Account lockout threshold not configured — no lockout applied
+[2024-03-15 09:03:55] [INFO]  DNS cache refreshed
+[2024-03-15 09:45:12] [INFO]  Ping executed: target=192.168.1.1
+[2024-03-15 10:02:31] [ERROR] Subprocess timeout — target unreachable
+[2024-03-15 10:30:00] [INFO]  Scheduled log rotation skipped (not configured)
+[2024-03-15 11:15:44] [INFO]  GET /logs — 200 OK
+[2024-03-15 12:00:00] [INFO]  Heartbeat OK — all systems nominal
+[2024-03-15 13:22:09] [WARN]  Portal accessible from external IP — VPN restriction not enforced
+[2024-03-15 14:08:53] [INFO]  Ping executed: target=10.0.0.1
+[2024-03-15 15:30:11] [INFO]  GET /about — 200 OK
+[2024-03-15 16:45:00] [WARN]  SSL certificate expires in 12 days — renewal pending
+[2024-03-15 17:00:00] [INFO]  End-of-day snapshot complete
