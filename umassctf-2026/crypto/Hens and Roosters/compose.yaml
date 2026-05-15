@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      - FLAG=${FLAG:-UMASS{fakeflag}}
+    expose:
+      - "8000"
+
+  proxy:
+    build: ./proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
